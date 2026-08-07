@@ -8,7 +8,8 @@ interface NavItem {
 
 const items: NavItem[] = [
   { to: '/clients', label: 'Base clients', enabled: true },
-  { to: '/agenda', label: 'Agenda & Planning', enabled: false },
+  { to: '/agenda', label: 'Agenda', enabled: true },
+  { to: '/projets', label: 'Projets', enabled: true },
   { to: '/facturation', label: 'Facturation', enabled: false }
 ]
 

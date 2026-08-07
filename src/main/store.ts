@@ -12,16 +12,20 @@
 import { app } from 'electron'
 import { join } from 'path'
 import { existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from 'fs'
-import type { Client } from '../shared/types'
+import type { Client, Event, Project } from '../shared/types'
 
 export interface AppData {
   schemaVersion: number
   clients: Client[]
+  projects: Project[]
+  events: Event[]
 }
 
 const DEFAULT_DATA: AppData = {
   schemaVersion: 1,
-  clients: []
+  clients: [],
+  projects: [],
+  events: []
 }
 
 let cache: AppData | null = null
@@ -49,7 +53,9 @@ export function loadData(): AppData {
     const parsed = JSON.parse(raw) as Partial<AppData>
     cache = {
       schemaVersion: parsed.schemaVersion ?? 1,
-      clients: parsed.clients ?? []
+      clients: parsed.clients ?? [],
+      projects: parsed.projects ?? [],
+      events: parsed.events ?? []
     }
   } catch (err) {
     // Fichier corrompu ou illisible : on ne perd pas les données existantes,

@@ -2,6 +2,8 @@ import { app, shell, BrowserWindow } from 'electron'
 import { join } from 'path'
 import { is } from './utils/is'
 import { registerClientsIpc } from './ipc/clients'
+import { registerProjectsIpc } from './ipc/projects'
+import { registerEventsIpc } from './ipc/events'
 import { persist } from './store'
 
 function createWindow(): void {
@@ -39,6 +41,8 @@ function createWindow(): void {
 
 app.whenReady().then(() => {
   registerClientsIpc()
+  registerProjectsIpc()
+  registerEventsIpc()
 
   createWindow()
 

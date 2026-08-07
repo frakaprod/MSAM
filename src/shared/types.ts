@@ -32,3 +32,68 @@ export interface ClientFilters {
   search?: string
   statut?: ClientStatut | 'tous'
 }
+
+// --- Projets ---
+
+export type ProjectStatut = 'prospect' | 'en_cours' | 'en_pause' | 'termine' | 'annule'
+
+export interface Project {
+  id: string
+  nom: string
+  clientId: string | null
+  statut: ProjectStatut
+  description: string | null
+  dateLivraison: string | null // YYYY-MM-DD, deadline cible
+  createdAt: string
+  updatedAt: string
+}
+
+export type ProjectInput = Omit<Project, 'id' | 'createdAt' | 'updatedAt'>
+
+export interface ProjectFilters {
+  search?: string
+  statut?: ProjectStatut | 'tous'
+  clientId?: string
+}
+
+// --- Agenda (événements) ---
+// Un seul calendrier pour les RDV clients et les étapes de projets, comme
+// convenu : plutôt que deux vues séparées, tout vit ici avec une "categorie"
+// qui permet de filtrer / colorer.
+
+export type EventCategorie =
+  | 'rdv_client'
+  | 'tournage'
+  | 'montage'
+  | 'retours_client'
+  | 'livraison'
+  | 'personnel'
+  | 'autre'
+
+export type EventStatut = 'a_faire' | 'fait' | 'annule'
+
+export interface Event {
+  id: string
+  titre: string
+  categorie: EventCategorie
+  date: string // YYYY-MM-DD
+  heureDebut: string | null // HH:MM
+  heureFin: string | null // HH:MM
+  lieu: string | null
+  clientId: string | null
+  projetId: string | null
+  notes: string | null
+  statut: EventStatut
+  createdAt: string
+  updatedAt: string
+}
+
+export type EventInput = Omit<Event, 'id' | 'createdAt' | 'updatedAt'>
+
+export interface EventFilters {
+  from?: string // YYYY-MM-DD
+  to?: string // YYYY-MM-DD
+  categorie?: EventCategorie | 'toutes'
+  projetId?: string
+  clientId?: string
+}

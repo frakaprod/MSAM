@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
-import type { Client } from '../../../../shared/types'
+import type { Client, Project } from '../../../../shared/types'
+import { PROJECT_STATUT_LABELS, PROJECT_STATUT_STYLES } from '../../lib/meta'
 
 export default function ClientDetailPage(): React.JSX.Element {
   const { id } = useParams()
   const navigate = useNavigate()
   const [client, setClient] = useState<Client | null>(null)
+  const [projects, setProjects] = useState<Project[]>([])
   const [loading, setLoading] = useState(true)
   const [confirmingDelete, setConfirmingDelete] = useState(false)
 
@@ -15,6 +17,7 @@ export default function ClientDetailPage(): React.JSX.Element {
       setClient(data)
       setLoading(false)
     })
+    window.api.projects.list({ clientId: id, statut: 'tous' }).then(setProjects)
   }, [id])
 
   async function handleDelete(): Promise<void> {
@@ -131,8 +134,43 @@ export default function ClientDetailPage(): React.JSX.Element {
         </div>
       )}
 
-      <div className="mt-6 bg-slate-50 border border-dashed border-slate-300 rounded-xl p-4 text-sm text-slate-400">
-        Projets et factures liés à ce client apparaîtront ici (modules à venir).
+      <div className="mt-6 flex items-center justify-between">
+        <h3 className="text-sm font-medium text-slate-700">Projets</h3>
+        <Link
+          to={`/projets/nouveau?clientId=${client.id}`}
+          className="text-sm text-brand-600 hover:text-brand-700 font-medium"
+        >
+          + Nouveau projet
+        </Link>
+      </div>
+      <div className="mt-3 bg-white rounded-xl border border-slate-200 divide-y divide-slate-100">
+        {projects.length === 0 ? (
+          <div className="p-4 text-sm text-slate-400">Aucun projet pour ce client.</div>
+        ) : (
+          projects.map((project) => (
+            <Link
+              key={project.id}
+              to={`/projets/${project.id}`}
+              className="flex items-center justify-between px-4 py-3 hover:bg-slate-50"
+            >
+              <div>
+                <p className="text-sm font-medium text-slate-800">{project.nom}</p>
+                {project.dateLivraison && (
+                  <p className="text-xs text-slate-500 mt-0.5">Livraison : {project.dateLivraison}</p>
+                )}
+              </div>
+              <span
+                className={`inline-block rounded-full px-2.5 py-0.5 text-xs font-medium ${PROJECT_STATUT_STYLES[project.statut]}`}
+              >
+                {PROJECT_STATUT_LABELS[project.statut]}
+              </span>
+            </Link>
+          ))
+        )}
+      </div>
+
+      <div className="mt-4 bg-slate-50 border border-dashed border-slate-300 rounded-xl p-4 text-sm text-slate-400">
+        Les factures liées à ce client apparaîtront ici (module à venir).
       </div>
     </div>
   )
