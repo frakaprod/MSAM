@@ -32,11 +32,17 @@ if not exist "node_modules\electron\dist\electron.exe" (
   echo Le moteur de l'application ^(Electron^) n'a pas fini de se telecharger.
   echo Nouvelle tentative ^(ca peut prendre une minute ou deux^)...
   echo.
-  call npm approve-scripts --all >nul 2>nul
   if exist "node_modules\electron" rmdir /s /q "node_modules\electron"
   if exist "%LOCALAPPDATA%\electron\Cache" rmdir /s /q "%LOCALAPPDATA%\electron\Cache"
   if exist "%APPDATA%\electron\Cache" rmdir /s /q "%APPDATA%\electron\Cache"
-  call npm install --loglevel=info > "electron-install-log.txt" 2>&1
+  (
+    echo --- npm config ignore-scripts ---
+    call npm config get ignore-scripts
+    echo --- npm approve-scripts --all ---
+    call npm approve-scripts --all
+    echo --- npm install ^(scripts forces^) ---
+    call npm install --ignore-scripts=false --loglevel=verbose
+  ) > "electron-install-log.txt" 2>&1
   type electron-install-log.txt
   if not exist "node_modules\electron\dist\electron.exe" (
     echo.
