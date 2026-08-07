@@ -1,0 +1,17 @@
+@import "tailwindcss";
+
+@theme {
+  --color-brand-50: #f5f7ff;
+  --color-brand-100: #ecefff;
+  --color-brand-500: #4f5eff;
+  --color-brand-600: #3d4cf0;
+  --color-brand-700: #2f3bd6;
+}
+
+body {
+  @apply bg-slate-50 text-slate-900 antialiased;
+}
+
+.input {
+  @apply w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500;
+}
