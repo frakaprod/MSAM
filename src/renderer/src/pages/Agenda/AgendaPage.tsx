@@ -148,18 +148,26 @@ export default function AgendaPage(): React.JSX.Element {
       </div>
 
       {/* Légende des couleurs : rend le code couleur explicite plutôt que de
-          demander à François de le deviner en survolant les cases. */}
+          demander à François de le deviner en survolant les cases. Ordre
+          volontairement manuel (deadline projet entre Montage et Retours
+          client) plutôt que l'ordre de déclaration du type. */}
       <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 mb-4 text-xs text-slate-500">
-        {Object.entries(CATEGORIE_LABELS).map(([value, label]) => (
+        {(['rdv_client', 'tournage', 'montage'] as EventCategorie[]).map((value) => (
           <span key={value} className="flex items-center gap-1.5">
-            <span className={`w-2 h-2 rounded-full ${CATEGORIE_DOT[value as EventCategorie]}`} />
-            {label}
+            <span className={`w-2 h-2 rounded-full ${CATEGORIE_DOT[value]}`} />
+            {CATEGORIE_LABELS[value]}
           </span>
         ))}
         <span className="flex items-center gap-1.5">
           <span className={`w-2 h-2 rounded-full ${DEADLINE_DOT}`} />
           {DEADLINE_LABEL}
         </span>
+        {(['retours_client', 'livraison', 'personnel', 'autre'] as EventCategorie[]).map((value) => (
+          <span key={value} className="flex items-center gap-1.5">
+            <span className={`w-2 h-2 rounded-full ${CATEGORIE_DOT[value]}`} />
+            {CATEGORIE_LABELS[value]}
+          </span>
+        ))}
       </div>
 
       <div className="flex gap-6">
