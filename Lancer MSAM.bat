@@ -34,20 +34,23 @@ if not exist "node_modules\electron\dist\electron.exe" (
   echo.
   call npm approve-scripts --all >nul 2>nul
   if exist "node_modules\electron" rmdir /s /q "node_modules\electron"
-  call npm install
+  if exist "%LOCALAPPDATA%\electron\Cache" rmdir /s /q "%LOCALAPPDATA%\electron\Cache"
+  if exist "%APPDATA%\electron\Cache" rmdir /s /q "%APPDATA%\electron\Cache"
+  call npm install --loglevel=info > "electron-install-log.txt" 2>&1
+  type electron-install-log.txt
   if not exist "node_modules\electron\dist\electron.exe" (
     echo.
     echo ============================================================
-    echo  Le telechargement du moteur Electron a echoue.
-    echo  Verifie ta connexion internet, et regarde si ton antivirus
-    echo  ou pare-feu a bloque quelque chose ^(notification recente ?^).
-    echo  Puis relance ce fichier. Si ca persiste, copie tout le texte
-    echo  affiche dans cette fenetre et envoie-le a Claude.
+    echo  Le telechargement du moteur Electron a encore echoue.
+    echo  Un rapport detaille a ete enregistre juste a cote de ce
+    echo  fichier, dans "electron-install-log.txt".
+    echo  Glisse ce fichier dans la conversation avec Claude.
     echo ============================================================
     echo.
     pause
     exit /b 1
   )
+  del /q "electron-install-log.txt" >nul 2>nul
   echo Le moteur Electron est maintenant installe.
 )
 
