@@ -3,6 +3,7 @@ import {
   createBillingProfile,
   deleteBillingProfile,
   getBillingProfile,
+  getDefaultBillingProfile,
   listBillingProfiles,
   updateBillingProfile
 } from '../billingProfilesRepository'
@@ -15,6 +16,10 @@ export function registerBillingProfilesIpc(): void {
 
   ipcMain.handle('billingProfiles:get', (_event, id: string) => {
     return getBillingProfile(id)
+  })
+
+  ipcMain.handle('billingProfiles:getDefault', () => {
+    return getDefaultBillingProfile()
   })
 
   ipcMain.handle('billingProfiles:create', (_event, input: BillingProfileInput) => {

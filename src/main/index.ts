@@ -8,6 +8,7 @@ import { registerBillingProfilesIpc } from './ipc/billingProfiles'
 import { registerDocumentsIpc } from './ipc/documents'
 import { registerPaymentsIpc } from './ipc/payments'
 import { registerPreferencesIpc } from './ipc/preferences'
+import { registerPdfIpc } from './ipc/pdf'
 import { persist } from './store'
 
 function createWindow(): void {
@@ -51,6 +52,7 @@ app.whenReady().then(() => {
   registerDocumentsIpc()
   registerPaymentsIpc()
   registerPreferencesIpc()
+  registerPdfIpc()
 
   createWindow()
 

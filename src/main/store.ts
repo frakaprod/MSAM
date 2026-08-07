@@ -35,7 +35,8 @@ export interface AppData {
 
 const DEFAULT_PREFERENCES: Preferences = {
   theme: 'clair',
-  pageDemarrage: '/agenda'
+  pageDemarrage: '/agenda',
+  dossierExports: null
 }
 
 const DEFAULT_DATA: AppData = {

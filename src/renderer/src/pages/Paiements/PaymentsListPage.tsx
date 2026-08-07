@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
-import type { Client, InvoiceDocument, Payment } from '../../../../shared/types'
+import type { BillingProfile, Client, InvoiceDocument, Payment } from '../../../../shared/types'
 import { formatMonthLabel } from '../../lib/dateUtils'
 import { formatMontant } from '../../lib/meta'
 
@@ -8,23 +8,30 @@ export default function PaymentsListPage(): React.JSX.Element {
   const [payments, setPayments] = useState<Payment[]>([])
   const [documents, setDocuments] = useState<Record<string, InvoiceDocument>>({})
   const [clients, setClients] = useState<Record<string, Client>>({})
+  const [defaultProfile, setDefaultProfile] = useState<BillingProfile | null>(null)
   const [loading, setLoading] = useState(true)
 
   // Génération du relevé PDF d'un mois : releveOpenFor est le mois dont le
   // petit panneau d'options (case "inclure les non-déclarés") est ouvert ;
-  // releveMonth est le mois effectivement en cours d'impression (déclenche
-  // l'affichage de la vue imprimable ci-dessous puis window.print()).
+  // releveMonth est le mois effectivement en cours de rendu pour
+  // impression/export (déclenche l'affichage de la vue imprimable
+  // ci-dessous), releveAction précise ce qu'on en fait une fois montée.
   const [releveOpenFor, setReleveOpenFor] = useState<string | null>(null)
   const [releveIncludeNonDeclares, setReleveIncludeNonDeclares] = useState(true)
   const [releveMonth, setReleveMonth] = useState<string | null>(null)
+  const [releveAction, setReleveAction] = useState<'imprimer' | 'enregistrer' | null>(null)
+  const [savingReleve, setSavingReleve] = useState(false)
+  const [savedRelevePath, setSavedRelevePath] = useState<string | null>(null)
+  const [releveError, setReleveError] = useState<string | null>(null)
 
   async function reload(): Promise<void> {
     setLoading(true)
     try {
-      const [paymentsList, documentsList, clientsList] = await Promise.all([
+      const [paymentsList, documentsList, clientsList, profile] = await Promise.all([
         window.api.payments.list(),
         window.api.documents.list({ type: 'facture' }),
-        window.api.clients.list({ statut: 'tous' })
+        window.api.clients.list({ statut: 'tous' }),
+        window.api.billingProfiles.getDefault()
       ])
       setPayments(paymentsList)
       const docMap: Record<string, InvoiceDocument> = {}
@@ -33,6 +40,7 @@ export default function PaymentsListPage(): React.JSX.Element {
       const clientMap: Record<string, Client> = {}
       clientsList.forEach((c) => (clientMap[c.id] = c))
       setClients(clientMap)
+      setDefaultProfile(profile)
     } finally {
       setLoading(false)
     }
@@ -74,23 +82,46 @@ export default function PaymentsListPage(): React.JSX.Element {
     return label.charAt(0).toUpperCase() + label.slice(1)
   }
 
-  function handleGenererReleve(monthKey: string): void {
+  function handleGenererReleve(monthKey: string, action: 'imprimer' | 'enregistrer'): void {
     setReleveOpenFor(null)
+    setReleveError(null)
+    setSavedRelevePath(null)
+    setReleveAction(action)
     setReleveMonth(monthKey)
   }
 
-  // Une fois la vue imprimable montée (releveMonth passé), on déclenche
-  // l'impression, puis on referme la vue quand la boîte de dialogue
-  // d'impression se referme (annulée ou non).
+  // Une fois la vue imprimable montée (releveMonth passé), on déclenche soit
+  // l'impression (dialogue natif, refermé -> "afterprint" ci-dessous), soit
+  // l'enregistrement direct en PDF dans le dossier configuré en Préférences.
   useEffect(() => {
-    if (!releveMonth) return
-    const timeout = setTimeout(() => window.print(), 150)
+    if (!releveMonth || !releveAction) return
+    const timeout = setTimeout(async () => {
+      if (releveAction === 'imprimer') {
+        window.print()
+        return
+      }
+      setSavingReleve(true)
+      try {
+        const { path } = await window.api.pdf.save({
+          subfolder: 'Relevés',
+          filename: `Releve ${releveMonth}`
+        })
+        setSavedRelevePath(path)
+      } catch {
+        setReleveError("Impossible d'enregistrer le relevé PDF.")
+      } finally {
+        setSavingReleve(false)
+        setReleveMonth(null)
+        setReleveAction(null)
+      }
+    }, 150)
     return () => clearTimeout(timeout)
-  }, [releveMonth])
+  }, [releveMonth, releveAction])
 
   useEffect(() => {
     function handleAfterPrint(): void {
       setReleveMonth(null)
+      setReleveAction(null)
     }
     window.addEventListener('afterprint', handleAfterPrint)
     return () => window.removeEventListener('afterprint', handleAfterPrint)
@@ -120,6 +151,24 @@ export default function PaymentsListPage(): React.JSX.Element {
             </p>
           </div>
         </div>
+
+        {savingReleve && (
+          <p className="mb-4 text-sm text-slate-500 dark:text-slate-400">
+            Enregistrement du relevé en PDF...
+          </p>
+        )}
+        {savedRelevePath && (
+          <div className="mb-4 flex items-center justify-between gap-3 rounded-lg border border-emerald-200 dark:border-emerald-900 bg-emerald-50 dark:bg-emerald-900/30 px-3 py-2 text-sm text-emerald-700 dark:text-emerald-300">
+            <span className="truncate">Enregistré : {savedRelevePath}</span>
+            <button
+              onClick={() => window.api.pdf.revealFile(savedRelevePath)}
+              className="shrink-0 text-xs font-medium underline hover:no-underline"
+            >
+              Afficher dans le dossier
+            </button>
+          </div>
+        )}
+        {releveError && <p className="mb-4 text-sm text-red-600">{releveError}</p>}
 
         {loading ? (
           <div className="p-8 text-center text-sm text-slate-400 dark:text-slate-500">
@@ -179,10 +228,17 @@ export default function PaymentsListPage(): React.JSX.Element {
                             </button>
                             <button
                               type="button"
-                              onClick={() => handleGenererReleve(monthKey)}
+                              onClick={() => handleGenererReleve(monthKey, 'imprimer')}
+                              className="text-xs px-2.5 py-1 rounded border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700"
+                            >
+                              Imprimer
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleGenererReleve(monthKey, 'enregistrer')}
                               className="text-xs px-2.5 py-1 rounded bg-brand-600 text-white font-medium hover:bg-brand-700"
                             >
-                              Générer
+                              Enregistrer en PDF
                             </button>
                           </div>
                         </div>
@@ -307,7 +363,11 @@ export default function PaymentsListPage(): React.JSX.Element {
       {/* ---------- Relevé imprimable (masqué à l'écran, visible seulement à l'impression) ---------- */}
       {releveMonth && (
         <div className="hidden print:block p-8 text-sm text-slate-800">
+          {defaultProfile?.logo && (
+            <img src={defaultProfile.logo} alt="Logo" className="h-14 max-w-[200px] object-contain mb-3" />
+          )}
           <h1 className="text-xl font-bold">Relevé des paiements — {monthLabel(releveMonth)}</h1>
+          {defaultProfile && <p className="text-xs text-slate-500 mt-1">{defaultProfile.raisonSociale}</p>}
           <p className="text-xs text-slate-500 mt-1">
             {releveIncludeNonDeclares
               ? 'Tous les paiements du mois.'

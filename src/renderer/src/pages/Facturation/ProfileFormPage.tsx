@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import type { BillingProfileInput, RegimeTva, StatutJuridique } from '../../../../shared/types'
 import { REGIME_TVA_LABELS, STATUT_JURIDIQUE_LABELS } from '../../../../shared/types'
+import { fileToResizedDataUrl } from '../../lib/image'
 
 const DEFAULT_MENTIONS = `Pas d'escompte pour paiement anticipé.
 En cas de retard de paiement, une pénalité au taux annuel de 10% sera appliquée, ainsi qu'une indemnité forfaitaire pour frais de recouvrement de 40 €.`
@@ -22,6 +23,7 @@ function emptyForm(): BillingProfileInput {
     email: '',
     iban: '',
     bic: '',
+    logo: null,
     prefixeFacture: 'FA-',
     prochainNumeroFacture: 1,
     prefixeDevis: 'DE-',
@@ -66,6 +68,7 @@ export default function ProfileFormPage(): React.JSX.Element {
           email: profile.email ?? '',
           iban: profile.iban ?? '',
           bic: profile.bic ?? '',
+          logo: profile.logo,
           prefixeFacture: profile.prefixeFacture,
           prochainNumeroFacture: profile.prochainNumeroFacture,
           prefixeDevis: profile.prefixeDevis,
@@ -81,6 +84,18 @@ export default function ProfileFormPage(): React.JSX.Element {
 
   function update<K extends keyof BillingProfileInput>(key: K, value: BillingProfileInput[K]): void {
     setForm((prev) => ({ ...prev, [key]: value }))
+  }
+
+  async function handleLogoChange(e: React.ChangeEvent<HTMLInputElement>): Promise<void> {
+    const file = e.target.files?.[0]
+    e.target.value = ''
+    if (!file) return
+    try {
+      const dataUrl = await fileToResizedDataUrl(file)
+      update('logo', dataUrl)
+    } catch {
+      setError("Impossible de charger cette image comme logo.")
+    }
   }
 
   async function handleSubmit(e: React.FormEvent): Promise<void> {
@@ -174,6 +189,38 @@ export default function ProfileFormPage(): React.JSX.Element {
             className="input"
             required
           />
+        </label>
+
+        <label className="block">
+          <span className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">
+            Logo (facture, devis, relevés)
+          </span>
+          <div className="flex items-center gap-3">
+            {form.logo && (
+              <img
+                src={form.logo}
+                alt="Logo"
+                className="h-16 w-16 object-contain rounded border border-slate-200 dark:border-slate-700 bg-white p-1"
+              />
+            )}
+            <div>
+              <input
+                type="file"
+                accept="image/png,image/jpeg,image/webp,image/svg+xml"
+                onChange={handleLogoChange}
+                className="text-sm text-slate-600 dark:text-slate-300"
+              />
+              {form.logo && (
+                <button
+                  type="button"
+                  onClick={() => update('logo', null)}
+                  className="block mt-1 text-xs text-red-600 hover:text-red-700"
+                >
+                  Supprimer le logo
+                </button>
+              )}
+            </div>
+          </div>
         </label>
 
         <div className="grid grid-cols-2 gap-4">

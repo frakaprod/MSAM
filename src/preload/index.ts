@@ -61,6 +61,8 @@ const api = {
     list: (): Promise<BillingProfile[]> => ipcRenderer.invoke('billingProfiles:list'),
     get: (id: string): Promise<BillingProfile | null> =>
       ipcRenderer.invoke('billingProfiles:get', id),
+    getDefault: (): Promise<BillingProfile | null> =>
+      ipcRenderer.invoke('billingProfiles:getDefault'),
     create: (input: BillingProfileInput): Promise<BillingProfile> =>
       ipcRenderer.invoke('billingProfiles:create', input),
     update: (id: string, input: BillingProfileInput): Promise<BillingProfile | null> =>
@@ -92,7 +94,17 @@ const api = {
     get: (): Promise<Preferences> => ipcRenderer.invoke('preferences:get'),
     update: (input: PreferencesUpdateInput): Promise<Preferences> =>
       ipcRenderer.invoke('preferences:update', input),
-    getSync: (): Preferences => ipcRenderer.sendSync('preferences:get-sync')
+    getSync: (): Preferences => ipcRenderer.sendSync('preferences:get-sync'),
+    chooseExportsFolder: (): Promise<Preferences | null> =>
+      ipcRenderer.invoke('preferences:chooseExportsFolder'),
+    openExportsFolder: (): Promise<boolean> =>
+      ipcRenderer.invoke('preferences:openExportsFolder')
+  },
+  pdf: {
+    save: (input: { subfolder: string; filename: string }): Promise<{ path: string }> =>
+      ipcRenderer.invoke('pdf:save', input),
+    revealFile: (filePath: string): Promise<boolean> =>
+      ipcRenderer.invoke('pdf:revealFile', filePath)
   }
 }
 

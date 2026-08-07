@@ -138,6 +138,7 @@ export interface BillingProfile {
   email: string | null
   iban: string | null
   bic: string | null
+  logo: string | null // data URL (image redimensionnée côté renderer avant envoi)
   prefixeFacture: string // ex: "FA-2026-"
   prochainNumeroFacture: number
   prefixeDevis: string // ex: "DE-2026-"
@@ -239,6 +240,11 @@ export type PageDemarrage = '/agenda' | '/clients' | '/projets' | '/facturation'
 export interface Preferences {
   theme: ThemeMode
   pageDemarrage: PageDemarrage
+  // Dossier où sont enregistrés les PDF générés (factures, devis, relevés).
+  // null tant qu'aucune valeur n'a encore été calculée/choisie ; le main
+  // process le remplit avec un dossier par défaut (Documents/MSAM) au premier
+  // accès, cf. preferencesRepository.ts.
+  dossierExports: string | null
 }
 
 export type PreferencesUpdateInput = Partial<Preferences>

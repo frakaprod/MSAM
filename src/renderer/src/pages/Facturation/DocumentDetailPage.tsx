@@ -26,6 +26,9 @@ export default function DocumentDetailPage({ type }: { type: DocumentType }): Re
   const [loading, setLoading] = useState(true)
   const [confirmingDelete, setConfirmingDelete] = useState(false)
   const [converting, setConverting] = useState(false)
+  const [savingPdf, setSavingPdf] = useState(false)
+  const [savedPdfPath, setSavedPdfPath] = useState<string | null>(null)
+  const [pdfError, setPdfError] = useState<string | null>(null)
 
   async function reload(): Promise<void> {
     if (!id) return
@@ -91,6 +94,22 @@ export default function DocumentDetailPage({ type }: { type: DocumentType }): Re
     window.print()
   }
 
+  async function handleSavePdf(): Promise<void> {
+    if (!doc) return
+    setSavingPdf(true)
+    setPdfError(null)
+    setSavedPdfPath(null)
+    try {
+      const subfolder = type === 'devis' ? 'Devis' : 'Factures'
+      const { path } = await window.api.pdf.save({ subfolder, filename: doc.numero })
+      setSavedPdfPath(path)
+    } catch {
+      setPdfError("Impossible d'enregistrer le PDF. Vérifie le dossier choisi dans Préférences.")
+    } finally {
+      setSavingPdf(false)
+    }
+  }
+
   if (loading) {
     return <div className="p-8 text-sm text-slate-400 dark:text-slate-500">Chargement...</div>
   }
@@ -145,10 +164,17 @@ export default function DocumentDetailPage({ type }: { type: DocumentType }): Re
           </div>
           <div className="flex gap-2">
             <button
+              onClick={handleSavePdf}
+              disabled={savingPdf}
+              className="rounded-lg bg-brand-600 px-4 py-2 text-sm font-medium text-white hover:bg-brand-700 disabled:opacity-60"
+            >
+              {savingPdf ? 'Enregistrement...' : 'Enregistrer en PDF'}
+            </button>
+            <button
               onClick={handlePrint}
               className="rounded-lg border border-slate-300 dark:border-slate-600 px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/60"
             >
-              Imprimer / PDF
+              Imprimer
             </button>
             <Link
               to={`/facturation/${basePath}/${doc.id}/modifier`}
@@ -164,6 +190,19 @@ export default function DocumentDetailPage({ type }: { type: DocumentType }): Re
             </button>
           </div>
         </div>
+
+        {savedPdfPath && (
+          <div className="mt-4 flex items-center justify-between gap-3 rounded-lg border border-emerald-200 dark:border-emerald-900 bg-emerald-50 dark:bg-emerald-900/30 px-3 py-2 text-sm text-emerald-700 dark:text-emerald-300">
+            <span className="truncate">Enregistré : {savedPdfPath}</span>
+            <button
+              onClick={() => window.api.pdf.revealFile(savedPdfPath)}
+              className="shrink-0 text-xs font-medium underline hover:no-underline"
+            >
+              Afficher dans le dossier
+            </button>
+          </div>
+        )}
+        {pdfError && <p className="mt-4 text-sm text-red-600">{pdfError}</p>}
 
         {confirmingDelete && (
           <div className="mt-4 rounded-lg border border-red-200 dark:border-red-900 bg-red-50 dark:bg-red-950/40 p-4 text-sm">
@@ -229,9 +268,9 @@ export default function DocumentDetailPage({ type }: { type: DocumentType }): Re
         <div className="mt-6 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-4">
           <h3 className="text-xs font-medium text-slate-500 dark:text-slate-400 mb-2">Aperçu</h3>
           <p className="text-xs text-slate-400 dark:text-slate-500">
-            L'aperçu exact du document imprimé/exporté en PDF apparaît ci-dessous et via le bouton
-            "Imprimer / PDF" (choisis "Microsoft Print to PDF" comme imprimante pour l'enregistrer en
-            fichier).
+            L'aperçu exact du document apparaît ci-dessous. "Enregistrer en PDF" le sauvegarde
+            directement dans le dossier choisi en Préférences ; "Imprimer" ouvre la boîte de dialogue
+            d'impression (papier ou autre emplacement).
           </p>
         </div>
       </div>
@@ -241,6 +280,9 @@ export default function DocumentDetailPage({ type }: { type: DocumentType }): Re
         <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 print:border-0 rounded-xl print:rounded-none p-10 print:p-0 text-sm text-slate-800 dark:text-slate-200">
           <div className="flex justify-between items-start">
             <div>
+              {profile.logo && (
+                <img src={profile.logo} alt="Logo" className="h-14 max-w-[200px] object-contain mb-2" />
+              )}
               <p className="font-semibold text-base">{profile.raisonSociale}</p>
               {profile.adresse && <p>{profile.adresse}</p>}
               {(profile.codePostal || profile.ville) && (
