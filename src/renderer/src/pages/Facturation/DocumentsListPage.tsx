@@ -9,6 +9,8 @@ import {
 import { DOCUMENT_STATUT_LABELS, DOCUMENT_STATUT_STYLES, formatMontant } from '../../lib/meta'
 import DeleteButton from '../../components/DeleteButton'
 import EditButton from '../../components/EditButton'
+import PrintButton from '../../components/PrintButton'
+import PdfButton from '../../components/PdfButton'
 
 export default function DocumentsListPage({ type }: { type: DocumentType }): React.JSX.Element {
   const [documents, setDocuments] = useState<InvoiceDocument[]>([])
@@ -103,7 +105,7 @@ export default function DocumentsListPage({ type }: { type: DocumentType }): Rea
                 <th className="px-4 py-3 font-medium">Date</th>
                 <th className="px-4 py-3 font-medium text-right">Total TTC</th>
                 <th className="px-4 py-3 font-medium">Statut</th>
-                <th className="w-16" />
+                <th className="w-28" />
               </tr>
             </thead>
             <tbody>
@@ -136,6 +138,14 @@ export default function DocumentsListPage({ type }: { type: DocumentType }): Rea
                     </td>
                     <td className="px-2 py-3">
                       <div className="flex items-center gap-1">
+                        <PrintButton
+                          to={`/facturation/${type === 'devis' ? 'devis' : 'factures'}/${doc.id}?action=imprimer`}
+                          title={`Imprimer ce ${label}`}
+                        />
+                        <PdfButton
+                          to={`/facturation/${type === 'devis' ? 'devis' : 'factures'}/${doc.id}?action=pdf`}
+                          title={`Enregistrer ce ${label} en PDF`}
+                        />
                         <EditButton
                           to={`/facturation/${type === 'devis' ? 'devis' : 'factures'}/${doc.id}/modifier`}
                           title={`Modifier ce ${label}`}

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Link, useNavigate, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import type {
   BillingProfile,
   Client,
@@ -16,6 +16,7 @@ import { DOCUMENT_STATUT_LABELS, DOCUMENT_STATUT_STYLES, formatMontant } from '.
 export default function DocumentDetailPage({ type }: { type: DocumentType }): React.JSX.Element {
   const { id } = useParams()
   const navigate = useNavigate()
+  const [searchParams, setSearchParams] = useSearchParams()
   const basePath = type === 'devis' ? 'devis' : 'factures'
   const label = type === 'devis' ? 'Devis' : 'Facture'
 
@@ -109,6 +110,24 @@ export default function DocumentDetailPage({ type }: { type: DocumentType }): Re
       setSavingPdf(false)
     }
   }
+
+  // Icônes "Imprimer" / "Enregistrer en PDF" dans la liste : elles amènent ici
+  // avec ?action=imprimer|pdf pour déclencher l'action tout de suite, sans
+  // dupliquer le rendu imprimable de la facture/devis dans la liste. Le
+  // paramètre est retiré de l'URL immédiatement pour rester idempotent (pas
+  // de nouvel impression si la page est rechargée).
+  useEffect(() => {
+    if (!doc) return
+    const action = searchParams.get('action')
+    if (action === 'imprimer') {
+      setSearchParams({}, { replace: true })
+      handlePrint()
+    } else if (action === 'pdf') {
+      setSearchParams({}, { replace: true })
+      handleSavePdf()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [doc])
 
   if (loading) {
     return <div className="p-8 text-sm text-slate-400 dark:text-slate-500">Chargement...</div>

@@ -11,7 +11,7 @@ const items: NavItem[] = [
   { to: '/agenda', label: 'Agenda', enabled: true },
   { to: '/projets', label: 'Projets', enabled: true },
   { to: '/facturation', label: 'Facturation', enabled: true },
-  { to: '/paiements', label: 'Paiements', enabled: true }
+  { to: '/paiements', label: 'Fiscalité', enabled: true }
 ]
 
 const footerItems: NavItem[] = [{ to: '/preferences', label: 'Préférences', enabled: true }]

@@ -15,7 +15,7 @@ const PAGE_OPTIONS: { value: PageDemarrage; label: string }[] = [
   { value: '/clients', label: 'Base clients' },
   { value: '/projets', label: 'Projets' },
   { value: '/facturation', label: 'Facturation' },
-  { value: '/paiements', label: 'Paiements' }
+  { value: '/paiements', label: 'Fiscalité' }
 ]
 
 export default function PreferencesPage(): React.JSX.Element {
