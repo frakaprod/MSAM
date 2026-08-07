@@ -36,12 +36,19 @@ if not exist "node_modules\electron\dist\electron.exe" (
   if exist "%LOCALAPPDATA%\electron\Cache" rmdir /s /q "%LOCALAPPDATA%\electron\Cache"
   if exist "%APPDATA%\electron\Cache" rmdir /s /q "%APPDATA%\electron\Cache"
   (
+    echo --- variables d'environnement liees a Electron/npm ---
+    set | findstr /i "electron npm_config"
     echo --- npm config ignore-scripts ---
     call npm config get ignore-scripts
     echo --- npm approve-scripts --all ---
     call npm approve-scripts --all
-    echo --- npm install ^(scripts forces^) ---
-    call npm install --ignore-scripts=false --loglevel=verbose
+    echo --- nettoyage des variables susceptibles de bloquer le telechargement ---
+    set ELECTRON_SKIP_BINARY_DOWNLOAD=
+    set ELECTRON_MIRROR=
+    set ELECTRON_CUSTOM_DIR=
+    set npm_config_electron_skip_binary_download=
+    echo --- npm install ^(scripts forces, en premier plan^) ---
+    call npm install --ignore-scripts=false --foreground-scripts --loglevel=verbose
   ) > "electron-install-log.txt" 2>&1
   type electron-install-log.txt
   if not exist "node_modules\electron\dist\electron.exe" (
