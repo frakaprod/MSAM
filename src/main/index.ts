@@ -4,6 +4,8 @@ import { is } from './utils/is'
 import { registerClientsIpc } from './ipc/clients'
 import { registerProjectsIpc } from './ipc/projects'
 import { registerEventsIpc } from './ipc/events'
+import { registerBillingProfilesIpc } from './ipc/billingProfiles'
+import { registerDocumentsIpc } from './ipc/documents'
 import { persist } from './store'
 
 function createWindow(): void {
@@ -43,6 +45,8 @@ app.whenReady().then(() => {
   registerClientsIpc()
   registerProjectsIpc()
   registerEventsIpc()
+  registerBillingProfilesIpc()
+  registerDocumentsIpc()
 
   createWindow()
 

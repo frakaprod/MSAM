@@ -1,13 +1,21 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
-import type { Client, Project } from '../../../../shared/types'
-import { PROJECT_STATUT_LABELS, PROJECT_STATUT_STYLES } from '../../lib/meta'
+import type { Client, InvoiceDocument, Project } from '../../../../shared/types'
+import {
+  DOCUMENT_STATUT_LABELS,
+  DOCUMENT_STATUT_STYLES,
+  PROJECT_STATUT_LABELS,
+  PROJECT_STATUT_STYLES,
+  formatMontant
+} from '../../lib/meta'
+import { computeDocumentTotals } from '../../../../shared/invoiceCalc'
 
 export default function ClientDetailPage(): React.JSX.Element {
   const { id } = useParams()
   const navigate = useNavigate()
   const [client, setClient] = useState<Client | null>(null)
   const [projects, setProjects] = useState<Project[]>([])
+  const [documents, setDocuments] = useState<InvoiceDocument[]>([])
   const [loading, setLoading] = useState(true)
   const [confirmingDelete, setConfirmingDelete] = useState(false)
 
@@ -18,6 +26,7 @@ export default function ClientDetailPage(): React.JSX.Element {
       setLoading(false)
     })
     window.api.projects.list({ clientId: id, statut: 'tous' }).then(setProjects)
+    window.api.documents.list({ clientId: id }).then(setDocuments)
   }, [id])
 
   async function handleDelete(): Promise<void> {
@@ -169,8 +178,52 @@ export default function ClientDetailPage(): React.JSX.Element {
         )}
       </div>
 
-      <div className="mt-4 bg-slate-50 border border-dashed border-slate-300 rounded-xl p-4 text-sm text-slate-400">
-        Les factures liées à ce client apparaîtront ici (module à venir).
+      <div className="mt-6 flex items-center justify-between">
+        <h3 className="text-sm font-medium text-slate-700">Devis &amp; factures</h3>
+        <div className="flex gap-3">
+          <Link
+            to={`/facturation/devis/nouveau?clientId=${client.id}`}
+            className="text-sm text-brand-600 hover:text-brand-700 font-medium"
+          >
+            + Devis
+          </Link>
+          <Link
+            to={`/facturation/factures/nouveau?clientId=${client.id}`}
+            className="text-sm text-brand-600 hover:text-brand-700 font-medium"
+          >
+            + Facture
+          </Link>
+        </div>
+      </div>
+      <div className="mt-3 bg-white rounded-xl border border-slate-200 divide-y divide-slate-100">
+        {documents.length === 0 ? (
+          <div className="p-4 text-sm text-slate-400">Aucun devis ou facture pour ce client.</div>
+        ) : (
+          documents.map((doc) => {
+            const totals = computeDocumentTotals(doc.lignes)
+            return (
+              <Link
+                key={doc.id}
+                to={`/facturation/${doc.type === 'devis' ? 'devis' : 'factures'}/${doc.id}`}
+                className="flex items-center justify-between px-4 py-3 hover:bg-slate-50"
+              >
+                <div>
+                  <p className="text-sm font-medium text-slate-800">
+                    {doc.type === 'devis' ? 'Devis' : 'Facture'} {doc.numero}
+                  </p>
+                  <p className="text-xs text-slate-500 mt-0.5">
+                    {doc.dateEmission} · {formatMontant(totals.totalTTC)}
+                  </p>
+                </div>
+                <span
+                  className={`inline-block rounded-full px-2.5 py-0.5 text-xs font-medium ${DOCUMENT_STATUT_STYLES[doc.statut]}`}
+                >
+                  {DOCUMENT_STATUT_LABELS[doc.statut]}
+                </span>
+              </Link>
+            )
+          })
+        )}
       </div>
     </div>
   )

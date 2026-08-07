@@ -1,11 +1,16 @@
 import { contextBridge, ipcRenderer } from 'electron'
 import type {
+  BillingProfile,
+  BillingProfileInput,
   Client,
   ClientFilters,
   ClientInput,
+  DocumentFilters,
   Event,
   EventFilters,
   EventInput,
+  InvoiceDocument,
+  InvoiceDocumentInput,
   Project,
   ProjectFilters,
   ProjectInput
@@ -47,6 +52,31 @@ const api = {
       ipcRenderer.invoke('events:update', id, input),
     delete: (id: string): Promise<boolean> =>
       ipcRenderer.invoke('events:delete', id)
+  },
+  billingProfiles: {
+    list: (): Promise<BillingProfile[]> => ipcRenderer.invoke('billingProfiles:list'),
+    get: (id: string): Promise<BillingProfile | null> =>
+      ipcRenderer.invoke('billingProfiles:get', id),
+    create: (input: BillingProfileInput): Promise<BillingProfile> =>
+      ipcRenderer.invoke('billingProfiles:create', input),
+    update: (id: string, input: BillingProfileInput): Promise<BillingProfile | null> =>
+      ipcRenderer.invoke('billingProfiles:update', id, input),
+    delete: (id: string): Promise<boolean> =>
+      ipcRenderer.invoke('billingProfiles:delete', id)
+  },
+  documents: {
+    list: (filters?: DocumentFilters): Promise<InvoiceDocument[]> =>
+      ipcRenderer.invoke('documents:list', filters ?? {}),
+    get: (id: string): Promise<InvoiceDocument | null> =>
+      ipcRenderer.invoke('documents:get', id),
+    create: (input: InvoiceDocumentInput): Promise<InvoiceDocument> =>
+      ipcRenderer.invoke('documents:create', input),
+    update: (id: string, input: InvoiceDocumentInput): Promise<InvoiceDocument | null> =>
+      ipcRenderer.invoke('documents:update', id, input),
+    delete: (id: string): Promise<boolean> =>
+      ipcRenderer.invoke('documents:delete', id),
+    convertToFacture: (devisId: string): Promise<InvoiceDocument | null> =>
+      ipcRenderer.invoke('documents:convertToFacture', devisId)
   }
 }
 

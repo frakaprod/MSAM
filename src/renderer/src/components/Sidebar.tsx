@@ -10,12 +10,12 @@ const items: NavItem[] = [
   { to: '/clients', label: 'Base clients', enabled: true },
   { to: '/agenda', label: 'Agenda', enabled: true },
   { to: '/projets', label: 'Projets', enabled: true },
-  { to: '/facturation', label: 'Facturation', enabled: false }
+  { to: '/facturation', label: 'Facturation', enabled: true }
 ]
 
 export default function Sidebar(): React.JSX.Element {
   return (
-    <aside className="w-60 shrink-0 bg-slate-900 text-slate-100 flex flex-col">
+    <aside className="print:hidden w-60 shrink-0 bg-slate-900 text-slate-100 flex flex-col">
       <div className="px-5 py-6">
         <h1 className="text-lg font-semibold tracking-tight">MSAM</h1>
         <p className="text-xs text-slate-400">Ma Secrétaire à Moi</p>

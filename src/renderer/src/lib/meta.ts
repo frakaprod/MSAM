@@ -1,4 +1,4 @@
-import type { EventCategorie, EventStatut, ProjectStatut } from '../../../shared/types'
+import type { DocumentStatut, EventCategorie, EventStatut, ProjectStatut } from '../../../shared/types'
 
 export const CATEGORIE_LABELS: Record<EventCategorie, string> = {
   rdv_client: 'RDV client',
@@ -60,4 +60,28 @@ export const PROJECT_STATUT_STYLES: Record<ProjectStatut, string> = {
   en_pause: 'bg-slate-200 text-slate-600',
   termine: 'bg-emerald-100 text-emerald-800',
   annule: 'bg-red-100 text-red-700'
+}
+
+export const DOCUMENT_STATUT_LABELS: Record<DocumentStatut, string> = {
+  brouillon: 'Brouillon',
+  envoye: 'Envoyé',
+  accepte: 'Accepté',
+  refuse: 'Refusé',
+  paye: 'Payée',
+  en_retard: 'En retard',
+  annule: 'Annulé'
+}
+
+export const DOCUMENT_STATUT_STYLES: Record<DocumentStatut, string> = {
+  brouillon: 'bg-slate-200 text-slate-600',
+  envoye: 'bg-blue-100 text-blue-800',
+  accepte: 'bg-emerald-100 text-emerald-800',
+  refuse: 'bg-red-100 text-red-700',
+  paye: 'bg-emerald-100 text-emerald-800',
+  en_retard: 'bg-red-100 text-red-700',
+  annule: 'bg-slate-200 text-slate-500 line-through'
+}
+
+export function formatMontant(value: number): string {
+  return value.toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €'
 }
