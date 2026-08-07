@@ -59,16 +59,14 @@ if not exist "node_modules\electron\dist\electron.exe" (
   echo Le moteur Electron est maintenant installe.
 )
 
-if not exist out (
-  echo Construction de l'application ^(premiere fois seulement^)...
-  call npm run build
-  if errorlevel 1 (
-    echo.
-    echo Une erreur est survenue pendant la construction. Copie ce message et envoie-le a Claude.
-    echo.
-    pause
-    exit /b 1
-  )
+echo Construction de l'application...
+call npm run build
+if errorlevel 1 (
+  echo.
+  echo Une erreur est survenue pendant la construction. Copie ce message et envoie-le a Claude.
+  echo.
+  pause
+  exit /b 1
 )
 
 echo.
