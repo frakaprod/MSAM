@@ -32,6 +32,14 @@ export const CATEGORIE_DOT: Record<EventCategorie, string> = {
   autre: 'bg-slate-400'
 }
 
+// Marqueur spécial pour les deadlines de projet : ce ne sont pas des
+// événements stockés, elles sont calculées à la volée depuis la date de
+// livraison des projets, donc elles ont leur propre style bien distinct
+// (rouge) pour ne pas les confondre avec une catégorie d'événement classique.
+export const DEADLINE_LABEL = 'Deadline projet'
+export const DEADLINE_STYLE = 'bg-red-100 text-red-800 border-red-300'
+export const DEADLINE_DOT = 'bg-red-500'
+
 export const EVENT_STATUT_LABELS: Record<EventStatut, string> = {
   a_faire: 'À faire',
   fait: 'Fait',

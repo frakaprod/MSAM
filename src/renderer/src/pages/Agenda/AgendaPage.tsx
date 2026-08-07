@@ -1,7 +1,14 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import type { Client, Event, EventCategorie, Project } from '../../../../shared/types'
-import { CATEGORIE_DOT, CATEGORIE_LABELS, CATEGORIE_STYLES } from '../../lib/meta'
+import {
+  CATEGORIE_DOT,
+  CATEGORIE_LABELS,
+  CATEGORIE_STYLES,
+  DEADLINE_DOT,
+  DEADLINE_LABEL,
+  DEADLINE_STYLE
+} from '../../lib/meta'
 import { formatDayLabel, formatMonthLabel, getMonthMatrix, toISODate, todayISO } from '../../lib/dateUtils'
 
 export default function AgendaPage(): React.JSX.Element {
@@ -13,7 +20,8 @@ export default function AgendaPage(): React.JSX.Element {
   const [categorieFilter, setCategorieFilter] = useState<EventCategorie | 'toutes'>('toutes')
   const [events, setEvents] = useState<Event[]>([])
   const [clients, setClients] = useState<Record<string, Client>>({})
-  const [projects, setProjects] = useState<Record<string, Project>>({})
+  const [projectsMap, setProjectsMap] = useState<Record<string, Project>>({})
+  const [allProjects, setAllProjects] = useState<Project[]>([])
 
   const weeks = useMemo(
     () => getMonthMatrix(currentDate.getFullYear(), currentDate.getMonth()),
@@ -32,7 +40,8 @@ export default function AgendaPage(): React.JSX.Element {
     window.api.projects.list({ statut: 'tous' }).then((list) => {
       const map: Record<string, Project> = {}
       list.forEach((p) => (map[p.id] = p))
-      setProjects(map)
+      setProjectsMap(map)
+      setAllProjects(list)
     })
   }, [])
 
@@ -52,6 +61,21 @@ export default function AgendaPage(): React.JSX.Element {
     return map
   }, [events])
 
+  // Les deadlines de projet ne sont pas des événements enregistrés : elles
+  // sont calculées à la volée depuis la date de livraison de chaque projet,
+  // pour rester automatiquement à jour si la date change sur la fiche projet.
+  const deadlinesByDay = useMemo(() => {
+    const map: Record<string, Project[]> = {}
+    if (categorieFilter !== 'toutes') return map // le filtre par catégorie masque aussi les deadlines
+    for (const project of allProjects) {
+      if (!project.dateLivraison) continue
+      if (project.dateLivraison < rangeFrom || project.dateLivraison > rangeTo) continue
+      if (!map[project.dateLivraison]) map[project.dateLivraison] = []
+      map[project.dateLivraison].push(project)
+    }
+    return map
+  }, [allProjects, rangeFrom, rangeTo, categorieFilter])
+
   function goToPreviousMonth(): void {
     setCurrentDate((d) => new Date(d.getFullYear(), d.getMonth() - 1, 1))
   }
@@ -65,13 +89,14 @@ export default function AgendaPage(): React.JSX.Element {
   }
 
   const selectedDayEvents = eventsByDay[selectedDay] || []
+  const selectedDayDeadlines = deadlinesByDay[selectedDay] || []
 
   return (
     <div className="p-8">
       <div className="flex items-center justify-between mb-6">
         <div>
           <h2 className="text-2xl font-semibold text-slate-900">Agenda</h2>
-          <p className="text-sm text-slate-500 mt-1">RDV clients et étapes de projets, au même endroit</p>
+          <p className="text-sm text-slate-500 mt-1">RDV clients, étapes et deadlines de projets, au même endroit</p>
         </div>
         <Link
           to="/agenda/nouveau"
@@ -81,7 +106,7 @@ export default function AgendaPage(): React.JSX.Element {
         </Link>
       </div>
 
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
           <button
             onClick={goToPreviousMonth}
@@ -122,6 +147,21 @@ export default function AgendaPage(): React.JSX.Element {
         </select>
       </div>
 
+      {/* Légende des couleurs : rend le code couleur explicite plutôt que de
+          demander à François de le deviner en survolant les cases. */}
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 mb-4 text-xs text-slate-500">
+        {Object.entries(CATEGORIE_LABELS).map(([value, label]) => (
+          <span key={value} className="flex items-center gap-1.5">
+            <span className={`w-2 h-2 rounded-full ${CATEGORIE_DOT[value as EventCategorie]}`} />
+            {label}
+          </span>
+        ))}
+        <span className="flex items-center gap-1.5">
+          <span className={`w-2 h-2 rounded-full ${DEADLINE_DOT}`} />
+          {DEADLINE_LABEL}
+        </span>
+      </div>
+
       <div className="flex gap-6">
         <div className="flex-1 bg-white rounded-xl border border-slate-200 overflow-hidden">
           <div className="grid grid-cols-7 border-b border-slate-200">
@@ -141,6 +181,8 @@ export default function AgendaPage(): React.JSX.Element {
               const isToday = iso === todayISO()
               const isSelected = iso === selectedDay
               const dayEvents = eventsByDay[iso] || []
+              const dayDeadlines = deadlinesByDay[iso] || []
+              const totalItems = dayEvents.length + dayDeadlines.length
 
               return (
                 <button
@@ -162,7 +204,16 @@ export default function AgendaPage(): React.JSX.Element {
                     {day.getDate()}
                   </span>
                   <div className="flex flex-col gap-0.5">
-                    {dayEvents.slice(0, 3).map((event) => (
+                    {dayDeadlines.slice(0, 3).map((project) => (
+                      <span
+                        key={`deadline-${project.id}`}
+                        className={`flex items-center gap-1 rounded px-1 py-0.5 text-[10px] leading-tight truncate font-medium ${DEADLINE_STYLE}`}
+                      >
+                        <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${DEADLINE_DOT}`} />
+                        <span className="truncate">🚩 {project.nom}</span>
+                      </span>
+                    ))}
+                    {dayEvents.slice(0, Math.max(0, 3 - dayDeadlines.length)).map((event) => (
                       <span
                         key={event.id}
                         className={`flex items-center gap-1 rounded px-1 py-0.5 text-[10px] leading-tight truncate ${CATEGORIE_STYLES[event.categorie]}`}
@@ -174,9 +225,9 @@ export default function AgendaPage(): React.JSX.Element {
                         </span>
                       </span>
                     ))}
-                    {dayEvents.length > 3 && (
+                    {totalItems > 3 && (
                       <span className="text-[10px] text-slate-400 px-1">
-                        +{dayEvents.length - 3} autre{dayEvents.length - 3 > 1 ? 's' : ''}
+                        +{totalItems - 3} autre{totalItems - 3 > 1 ? 's' : ''}
                       </span>
                     )}
                   </div>
@@ -199,43 +250,68 @@ export default function AgendaPage(): React.JSX.Element {
             </Link>
 
             <div className="mt-4 space-y-2">
-              {selectedDayEvents.length === 0 ? (
+              {selectedDayDeadlines.length === 0 && selectedDayEvents.length === 0 ? (
                 <p className="text-sm text-slate-400">Rien de prévu ce jour.</p>
               ) : (
-                selectedDayEvents.map((event) => {
-                  const client = event.clientId ? clients[event.clientId] : null
-                  const project = event.projetId ? projects[event.projetId] : null
-                  return (
-                    <Link
-                      key={event.id}
-                      to={`/agenda/${event.id}/modifier`}
-                      className="block rounded-lg border border-slate-200 p-3 hover:border-brand-300 hover:bg-brand-50/40"
-                    >
-                      <div className="flex items-center justify-between">
+                <>
+                  {selectedDayDeadlines.map((project) => {
+                    const client = project.clientId ? clients[project.clientId] : null
+                    return (
+                      <Link
+                        key={`deadline-${project.id}`}
+                        to={`/projets/${project.id}`}
+                        className="block rounded-lg border border-red-200 bg-red-50/50 p-3 hover:border-red-300"
+                      >
                         <span
-                          className={`inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-[11px] font-medium ${CATEGORIE_STYLES[event.categorie]}`}
+                          className={`inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-[11px] font-medium ${DEADLINE_STYLE}`}
                         >
-                          {CATEGORIE_LABELS[event.categorie]}
+                          🚩 {DEADLINE_LABEL}
                         </span>
-                        {event.heureDebut && (
-                          <span className="text-xs text-slate-400">
-                            {event.heureDebut}
-                            {event.heureFin ? ` - ${event.heureFin}` : ''}
-                          </span>
+                        <p className="text-sm font-medium text-slate-800 mt-1.5">{project.nom}</p>
+                        {client && (
+                          <p className="text-xs text-slate-500 mt-0.5">
+                            {client.nom}
+                            {client.prenom ? ` ${client.prenom}` : ''}
+                          </p>
                         )}
-                      </div>
-                      <p className="text-sm font-medium text-slate-800 mt-1.5">{event.titre}</p>
-                      {(client || project) && (
-                        <p className="text-xs text-slate-500 mt-0.5">
-                          {[client ? `${client.nom}${client.prenom ? ` ${client.prenom}` : ''}` : null, project?.nom]
-                            .filter(Boolean)
-                            .join(' · ')}
-                        </p>
-                      )}
-                      {event.lieu && <p className="text-xs text-slate-400 mt-0.5">📍 {event.lieu}</p>}
-                    </Link>
-                  )
-                })
+                      </Link>
+                    )
+                  })}
+                  {selectedDayEvents.map((event) => {
+                    const client = event.clientId ? clients[event.clientId] : null
+                    const project = event.projetId ? projectsMap[event.projetId] : null
+                    return (
+                      <Link
+                        key={event.id}
+                        to={`/agenda/${event.id}/modifier`}
+                        className="block rounded-lg border border-slate-200 p-3 hover:border-brand-300 hover:bg-brand-50/40"
+                      >
+                        <div className="flex items-center justify-between">
+                          <span
+                            className={`inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-[11px] font-medium ${CATEGORIE_STYLES[event.categorie]}`}
+                          >
+                            {CATEGORIE_LABELS[event.categorie]}
+                          </span>
+                          {event.heureDebut && (
+                            <span className="text-xs text-slate-400">
+                              {event.heureDebut}
+                              {event.heureFin ? ` - ${event.heureFin}` : ''}
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-sm font-medium text-slate-800 mt-1.5">{event.titre}</p>
+                        {(client || project) && (
+                          <p className="text-xs text-slate-500 mt-0.5">
+                            {[client ? `${client.nom}${client.prenom ? ` ${client.prenom}` : ''}` : null, project?.nom]
+                              .filter(Boolean)
+                              .join(' · ')}
+                          </p>
+                        )}
+                        {event.lieu && <p className="text-xs text-slate-400 mt-0.5">📍 {event.lieu}</p>}
+                      </Link>
+                    )
+                  })}
+                </>
               )}
             </div>
           </div>
