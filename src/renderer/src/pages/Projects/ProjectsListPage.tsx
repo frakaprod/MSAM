@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import type { Client, Project, ProjectStatut } from '../../../../shared/types'
 import { PROJECT_STATUT_LABELS, PROJECT_STATUT_STYLES } from '../../lib/meta'
+import DeleteButton from '../../components/DeleteButton'
 
 export default function ProjectsListPage(): React.JSX.Element {
   const [projects, setProjects] = useState<Project[]>([])
@@ -18,17 +19,22 @@ export default function ProjectsListPage(): React.JSX.Element {
     })
   }, [])
 
+  async function reload(): Promise<void> {
+    setLoading(true)
+    try {
+      const data = await window.api.projects.list({ search, statut: statutFilter })
+      setProjects(data)
+    } finally {
+      setLoading(false)
+    }
+  }
+
   useEffect(() => {
-    const timeout = setTimeout(async () => {
-      setLoading(true)
-      try {
-        const data = await window.api.projects.list({ search, statut: statutFilter })
-        setProjects(data)
-      } finally {
-        setLoading(false)
-      }
+    const timeout = setTimeout(() => {
+      reload()
     }, 150)
     return () => clearTimeout(timeout)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [search, statutFilter])
 
   return (
@@ -83,6 +89,7 @@ export default function ProjectsListPage(): React.JSX.Element {
                 <th className="px-4 py-3 font-medium">Client</th>
                 <th className="px-4 py-3 font-medium">Livraison prévue</th>
                 <th className="px-4 py-3 font-medium">Statut</th>
+                <th className="w-10" />
               </tr>
             </thead>
             <tbody>
@@ -118,6 +125,15 @@ export default function ProjectsListPage(): React.JSX.Element {
                       >
                         {PROJECT_STATUT_LABELS[project.statut]}
                       </span>
+                    </td>
+                    <td className="px-2 py-3">
+                      <DeleteButton
+                        title="Supprimer ce projet"
+                        onConfirm={async () => {
+                          await window.api.projects.delete(project.id)
+                          reload()
+                        }}
+                      />
                     </td>
                   </tr>
                 )

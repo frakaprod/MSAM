@@ -7,6 +7,7 @@ import {
   FACTURE_STATUTS
 } from '../../../../shared/types'
 import { DOCUMENT_STATUT_LABELS, DOCUMENT_STATUT_STYLES, formatMontant } from '../../lib/meta'
+import DeleteButton from '../../components/DeleteButton'
 
 export default function DocumentsListPage({ type }: { type: DocumentType }): React.JSX.Element {
   const [documents, setDocuments] = useState<InvoiceDocument[]>([])
@@ -30,17 +31,22 @@ export default function DocumentsListPage({ type }: { type: DocumentType }): Rea
     })
   }, [])
 
+  async function reload(): Promise<void> {
+    setLoading(true)
+    try {
+      const data = await window.api.documents.list({ type, search, statut: statutFilter })
+      setDocuments(data)
+    } finally {
+      setLoading(false)
+    }
+  }
+
   useEffect(() => {
-    const timeout = setTimeout(async () => {
-      setLoading(true)
-      try {
-        const data = await window.api.documents.list({ type, search, statut: statutFilter })
-        setDocuments(data)
-      } finally {
-        setLoading(false)
-      }
+    const timeout = setTimeout(() => {
+      reload()
     }, 150)
     return () => clearTimeout(timeout)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [type, search, statutFilter])
 
   return (
@@ -96,6 +102,7 @@ export default function DocumentsListPage({ type }: { type: DocumentType }): Rea
                 <th className="px-4 py-3 font-medium">Date</th>
                 <th className="px-4 py-3 font-medium text-right">Total TTC</th>
                 <th className="px-4 py-3 font-medium">Statut</th>
+                <th className="w-10" />
               </tr>
             </thead>
             <tbody>
@@ -125,6 +132,15 @@ export default function DocumentsListPage({ type }: { type: DocumentType }): Rea
                       >
                         {DOCUMENT_STATUT_LABELS[doc.statut]}
                       </span>
+                    </td>
+                    <td className="px-2 py-3">
+                      <DeleteButton
+                        title={`Supprimer ce ${label}`}
+                        onConfirm={async () => {
+                          await window.api.documents.delete(doc.id)
+                          reload()
+                        }}
+                      />
                     </td>
                   </tr>
                 )

@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import type { BillingProfile } from '../../../../shared/types'
 import { STATUT_JURIDIQUE_LABELS } from '../../../../shared/types'
+import DeleteButton from '../../components/DeleteButton'
 
 export default function ProfilesListPage(): React.JSX.Element {
+  const navigate = useNavigate()
   const [profiles, setProfiles] = useState<BillingProfile[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -51,12 +53,12 @@ export default function ProfilesListPage(): React.JSX.Element {
       ) : (
         <div className="space-y-3">
           {profiles.map((profile) => (
-            <Link
+            <div
               key={profile.id}
-              to={`/facturation/profils/${profile.id}/modifier`}
-              className="block bg-white rounded-xl border border-slate-200 p-4 hover:border-brand-300"
+              onClick={() => navigate(`/facturation/profils/${profile.id}/modifier`)}
+              className="flex items-center justify-between bg-white rounded-xl border border-slate-200 p-4 hover:border-brand-300 cursor-pointer"
             >
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between flex-1">
                 <div>
                   <p className="text-sm font-medium text-slate-900">
                     {profile.nom}
@@ -75,7 +77,16 @@ export default function ProfilesListPage(): React.JSX.Element {
                   <p>Devis : {profile.prefixeDevis}{String(profile.prochainNumeroDevis).padStart(3, '0')}</p>
                 </div>
               </div>
-            </Link>
+              <div className="pl-4">
+                <DeleteButton
+                  title="Supprimer ce profil"
+                  onConfirm={async () => {
+                    await window.api.billingProfiles.delete(profile.id)
+                    reload()
+                  }}
+                />
+              </div>
+            </div>
           ))}
         </div>
       )}
