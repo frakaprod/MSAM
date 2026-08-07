@@ -1,0 +1,28 @@
+MSAM — Ma Secrétaire à Moi
+===========================
+
+INSTALLATION (une seule fois) :
+1. Si ce n'est pas déjà fait, installe Node.js : https://nodejs.org (bouton "LTS")
+   - Installateur classique, "suivant, suivant, terminer".
+2. Double-clique sur "Lancer MSAM.bat"
+   - La première fois, ça va télécharger et préparer l'application (quelques minutes, une fenêtre noire va défiler du texte, c'est normal).
+   - Une fenêtre MSAM va s'ouvrir automatiquement à la fin.
+
+UTILISATION AU QUOTIDIEN :
+- Double-clique sur "Lancer MSAM.bat" à chaque fois que tu veux ouvrir MSAM.
+- Les fois suivantes, ça s'ouvre en quelques secondes (pas besoin de retélécharger).
+
+TES DONNÉES :
+- Tout est stocké en local sur ton PC, dans :
+  C:\Users\<ton-nom-utilisateur>\AppData\Roaming\msam\msam-data.json
+- Rien n'est envoyé sur internet. Pense à sauvegarder ce fichier de temps en temps
+  (copier-coller dans un dossier de sauvegarde) si tu veux être tranquille.
+
+CE QUI EST DISPONIBLE AUJOURD'HUI :
+- Base clients (créer / rechercher / filtrer / modifier / supprimer des fiches clients)
+
+À VENIR :
+- Agenda & Planning projets
+- Facturation (avec gestion de plusieurs profils/statuts de facturation)
+
+Un souci, une idée, un bug ? Dis-le à Claude dans la conversation.
