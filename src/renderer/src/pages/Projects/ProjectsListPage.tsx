@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import type { Client, Project, ProjectStatut } from '../../../../shared/types'
 import { PROJECT_STATUT_LABELS, PROJECT_STATUT_STYLES } from '../../lib/meta'
 import DeleteButton from '../../components/DeleteButton'
+import EditButton from '../../components/EditButton'
 
 export default function ProjectsListPage(): React.JSX.Element {
   const [projects, setProjects] = useState<Project[]>([])
@@ -89,7 +90,7 @@ export default function ProjectsListPage(): React.JSX.Element {
                 <th className="px-4 py-3 font-medium">Client</th>
                 <th className="px-4 py-3 font-medium">Livraison prévue</th>
                 <th className="px-4 py-3 font-medium">Statut</th>
-                <th className="w-10" />
+                <th className="w-16" />
               </tr>
             </thead>
             <tbody>
@@ -127,13 +128,16 @@ export default function ProjectsListPage(): React.JSX.Element {
                       </span>
                     </td>
                     <td className="px-2 py-3">
-                      <DeleteButton
-                        title="Supprimer ce projet"
-                        onConfirm={async () => {
-                          await window.api.projects.delete(project.id)
-                          reload()
-                        }}
-                      />
+                      <div className="flex items-center gap-1">
+                        <EditButton to={`/projets/${project.id}/modifier`} title="Modifier ce projet" />
+                        <DeleteButton
+                          title="Supprimer ce projet"
+                          onConfirm={async () => {
+                            await window.api.projects.delete(project.id)
+                            reload()
+                          }}
+                        />
+                      </div>
                     </td>
                   </tr>
                 )

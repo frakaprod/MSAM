@@ -8,6 +8,7 @@ import {
 } from '../../../../shared/types'
 import { DOCUMENT_STATUT_LABELS, DOCUMENT_STATUT_STYLES, formatMontant } from '../../lib/meta'
 import DeleteButton from '../../components/DeleteButton'
+import EditButton from '../../components/EditButton'
 
 export default function DocumentsListPage({ type }: { type: DocumentType }): React.JSX.Element {
   const [documents, setDocuments] = useState<InvoiceDocument[]>([])
@@ -102,7 +103,7 @@ export default function DocumentsListPage({ type }: { type: DocumentType }): Rea
                 <th className="px-4 py-3 font-medium">Date</th>
                 <th className="px-4 py-3 font-medium text-right">Total TTC</th>
                 <th className="px-4 py-3 font-medium">Statut</th>
-                <th className="w-10" />
+                <th className="w-16" />
               </tr>
             </thead>
             <tbody>
@@ -134,13 +135,19 @@ export default function DocumentsListPage({ type }: { type: DocumentType }): Rea
                       </span>
                     </td>
                     <td className="px-2 py-3">
-                      <DeleteButton
-                        title={`Supprimer ce ${label}`}
-                        onConfirm={async () => {
-                          await window.api.documents.delete(doc.id)
-                          reload()
-                        }}
-                      />
+                      <div className="flex items-center gap-1">
+                        <EditButton
+                          to={`/facturation/${type === 'devis' ? 'devis' : 'factures'}/${doc.id}/modifier`}
+                          title={`Modifier ce ${label}`}
+                        />
+                        <DeleteButton
+                          title={`Supprimer ce ${label}`}
+                          onConfirm={async () => {
+                            await window.api.documents.delete(doc.id)
+                            reload()
+                          }}
+                        />
+                      </div>
                     </td>
                   </tr>
                 )

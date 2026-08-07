@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import type { BillingProfile } from '../../../../shared/types'
 import { STATUT_JURIDIQUE_LABELS } from '../../../../shared/types'
 import DeleteButton from '../../components/DeleteButton'
+import EditButton from '../../components/EditButton'
 
 export default function ProfilesListPage(): React.JSX.Element {
   const navigate = useNavigate()
@@ -77,7 +78,8 @@ export default function ProfilesListPage(): React.JSX.Element {
                   <p>Devis : {profile.prefixeDevis}{String(profile.prochainNumeroDevis).padStart(3, '0')}</p>
                 </div>
               </div>
-              <div className="pl-4">
+              <div className="pl-4 flex items-center gap-1">
+                <EditButton to={`/facturation/profils/${profile.id}/modifier`} title="Modifier ce profil" />
                 <DeleteButton
                   title="Supprimer ce profil"
                   onConfirm={async () => {

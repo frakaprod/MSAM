@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import type { Client, ClientStatut } from '../../../../shared/types'
 import DeleteButton from '../../components/DeleteButton'
+import EditButton from '../../components/EditButton'
 
 const STATUT_LABELS: Record<ClientStatut, string> = {
   prospect: 'Prospect',
@@ -101,7 +102,7 @@ export default function ClientsListPage(): React.JSX.Element {
                 <th className="px-4 py-3 font-medium">Contact</th>
                 <th className="px-4 py-3 font-medium">Ville</th>
                 <th className="px-4 py-3 font-medium">Statut</th>
-                <th className="w-10" />
+                <th className="w-16" />
               </tr>
             </thead>
             <tbody>
@@ -129,13 +130,16 @@ export default function ClientsListPage(): React.JSX.Element {
                     </span>
                   </td>
                   <td className="px-2 py-3">
-                    <DeleteButton
-                      title="Supprimer ce client"
-                      onConfirm={async () => {
-                        await window.api.clients.delete(client.id)
-                        reload()
-                      }}
-                    />
+                    <div className="flex items-center gap-1">
+                      <EditButton to={`/clients/${client.id}/modifier`} title="Modifier ce client" />
+                      <DeleteButton
+                        title="Supprimer ce client"
+                        onConfirm={async () => {
+                          await window.api.clients.delete(client.id)
+                          reload()
+                        }}
+                      />
+                    </div>
                   </td>
                 </tr>
               ))}
