@@ -53,7 +53,7 @@ export default function DocumentsListPage({ type }: { type: DocumentType }): Rea
   return (
     <div className="p-8 pt-6 max-w-5xl mx-auto">
       <div className="flex items-center justify-between mb-6">
-        <p className="text-sm text-slate-500">
+        <p className="text-sm text-slate-500 dark:text-slate-400">
           {documents.length} {label}
           {documents.length > 1 ? 's' : ''}
         </p>
@@ -71,12 +71,12 @@ export default function DocumentsListPage({ type }: { type: DocumentType }): Rea
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Rechercher un numéro..."
-          className="flex-1 rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+          className="flex-1 rounded-lg border border-slate-300 dark:border-slate-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
         />
         <select
           value={statutFilter}
           onChange={(e) => setStatutFilter(e.target.value as DocumentStatut | 'tous')}
-          className="rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+          className="rounded-lg border border-slate-300 dark:border-slate-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
         >
           <option value="tous">Tous les statuts</option>
           {statutsDisponibles.map((s) => (
@@ -87,17 +87,17 @@ export default function DocumentsListPage({ type }: { type: DocumentType }): Rea
         </select>
       </div>
 
-      <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+      <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden">
         {loading ? (
-          <div className="p-8 text-center text-sm text-slate-400">Chargement...</div>
+          <div className="p-8 text-center text-sm text-slate-400 dark:text-slate-500">Chargement...</div>
         ) : documents.length === 0 ? (
-          <div className="p-8 text-center text-sm text-slate-400">
+          <div className="p-8 text-center text-sm text-slate-400 dark:text-slate-500">
             Aucun{type === 'devis' ? '' : 'e'} {label} pour le moment.
           </div>
         ) : (
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-slate-200 text-left text-xs uppercase text-slate-400">
+              <tr className="border-b border-slate-200 dark:border-slate-700 text-left text-xs uppercase text-slate-400 dark:text-slate-500">
                 <th className="px-4 py-3 font-medium">N°</th>
                 <th className="px-4 py-3 font-medium">Client</th>
                 <th className="px-4 py-3 font-medium">Date</th>
@@ -111,20 +111,20 @@ export default function DocumentsListPage({ type }: { type: DocumentType }): Rea
                 const client = clients[doc.clientId]
                 const totals = computeDocumentTotals(doc.lignes)
                 return (
-                  <tr key={doc.id} className="border-b border-slate-100 last:border-0 hover:bg-slate-50">
+                  <tr key={doc.id} className="border-b border-slate-100 dark:border-slate-800 last:border-0 hover:bg-slate-50 dark:hover:bg-slate-700/60">
                     <td className="px-4 py-3">
                       <Link
                         to={`/facturation/${type === 'devis' ? 'devis' : 'factures'}/${doc.id}`}
-                        className="font-medium text-slate-900 hover:text-brand-600"
+                        className="font-medium text-slate-900 dark:text-slate-100 hover:text-brand-600"
                       >
                         {doc.numero}
                       </Link>
                     </td>
-                    <td className="px-4 py-3 text-slate-500">
+                    <td className="px-4 py-3 text-slate-500 dark:text-slate-400">
                       {client ? `${client.nom}${client.prenom ? ` ${client.prenom}` : ''}` : '—'}
                     </td>
-                    <td className="px-4 py-3 text-slate-500">{doc.dateEmission}</td>
-                    <td className="px-4 py-3 text-right text-slate-700 font-medium">
+                    <td className="px-4 py-3 text-slate-500 dark:text-slate-400">{doc.dateEmission}</td>
+                    <td className="px-4 py-3 text-right text-slate-700 dark:text-slate-300 font-medium">
                       {formatMontant(totals.totalTTC)}
                     </td>
                     <td className="px-4 py-3">

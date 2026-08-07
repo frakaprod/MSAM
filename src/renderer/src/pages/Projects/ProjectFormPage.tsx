@@ -90,20 +90,20 @@ export default function ProjectFormPage(): React.JSX.Element {
   }
 
   if (loading) {
-    return <div className="p-8 text-sm text-slate-400">Chargement...</div>
+    return <div className="p-8 text-sm text-slate-400 dark:text-slate-500">Chargement...</div>
   }
 
   return (
     <div className="p-8 max-w-2xl mx-auto">
-      <h2 className="text-2xl font-semibold text-slate-900 mb-6">
+      <h2 className="text-2xl font-semibold text-slate-900 dark:text-slate-100 mb-6">
         {isEdit ? 'Modifier le projet' : 'Nouveau projet'}
       </h2>
 
-      <form onSubmit={handleSubmit} className="space-y-5 bg-white rounded-xl border border-slate-200 p-6">
-        {error && <div className="rounded-lg bg-red-50 text-red-700 text-sm px-3 py-2">{error}</div>}
+      <form onSubmit={handleSubmit} className="space-y-5 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-6">
+        {error && <div className="rounded-lg bg-red-50 dark:bg-red-950/40 text-red-700 text-sm px-3 py-2">{error}</div>}
 
         <label className="block">
-          <span className="block text-xs font-medium text-slate-500 mb-1">Nom du projet *</span>
+          <span className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Nom du projet *</span>
           <input
             type="text"
             value={form.nom}
@@ -115,7 +115,7 @@ export default function ProjectFormPage(): React.JSX.Element {
 
         <div className="grid grid-cols-2 gap-4">
           <label className="block">
-            <span className="block text-xs font-medium text-slate-500 mb-1">Client</span>
+            <span className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Client</span>
             <select
               value={form.clientId ?? ''}
               onChange={(e) => update('clientId', e.target.value || null)}
@@ -132,7 +132,7 @@ export default function ProjectFormPage(): React.JSX.Element {
           </label>
 
           <label className="block">
-            <span className="block text-xs font-medium text-slate-500 mb-1">Statut</span>
+            <span className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Statut</span>
             <select
               value={form.statut}
               onChange={(e) => update('statut', e.target.value as ProjectStatut)}
@@ -148,7 +148,7 @@ export default function ProjectFormPage(): React.JSX.Element {
         </div>
 
         <label className="block">
-          <span className="block text-xs font-medium text-slate-500 mb-1">Livraison prévue</span>
+          <span className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Livraison prévue</span>
           <input
             type="date"
             value={form.dateLivraison ?? ''}
@@ -158,7 +158,7 @@ export default function ProjectFormPage(): React.JSX.Element {
         </label>
 
         <label className="block">
-          <span className="block text-xs font-medium text-slate-500 mb-1">Description</span>
+          <span className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Description</span>
           <textarea
             value={form.description ?? ''}
             onChange={(e) => update('description', e.target.value)}
@@ -171,7 +171,7 @@ export default function ProjectFormPage(): React.JSX.Element {
           <button
             type="button"
             onClick={() => navigate(-1)}
-            className="rounded-lg px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100"
+            className="rounded-lg px-4 py-2 text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700"
           >
             Annuler
           </button>

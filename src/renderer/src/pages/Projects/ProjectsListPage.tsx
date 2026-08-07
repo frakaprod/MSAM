@@ -42,8 +42,8 @@ export default function ProjectsListPage(): React.JSX.Element {
     <div className="p-8 max-w-5xl mx-auto">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h2 className="text-2xl font-semibold text-slate-900">Projets</h2>
-          <p className="text-sm text-slate-500 mt-1">
+          <h2 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">Projets</h2>
+          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
             {projects.length} projet{projects.length > 1 ? 's' : ''}
           </p>
         </div>
@@ -61,12 +61,12 @@ export default function ProjectsListPage(): React.JSX.Element {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Rechercher un projet..."
-          className="flex-1 rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+          className="flex-1 rounded-lg border border-slate-300 dark:border-slate-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
         />
         <select
           value={statutFilter}
           onChange={(e) => setStatutFilter(e.target.value as ProjectStatut | 'tous')}
-          className="rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+          className="rounded-lg border border-slate-300 dark:border-slate-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
         >
           <option value="tous">Tous les statuts</option>
           {Object.entries(PROJECT_STATUT_LABELS).map(([value, label]) => (
@@ -77,15 +77,15 @@ export default function ProjectsListPage(): React.JSX.Element {
         </select>
       </div>
 
-      <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+      <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden">
         {loading ? (
-          <div className="p-8 text-center text-sm text-slate-400">Chargement...</div>
+          <div className="p-8 text-center text-sm text-slate-400 dark:text-slate-500">Chargement...</div>
         ) : projects.length === 0 ? (
-          <div className="p-8 text-center text-sm text-slate-400">Aucun projet pour le moment.</div>
+          <div className="p-8 text-center text-sm text-slate-400 dark:text-slate-500">Aucun projet pour le moment.</div>
         ) : (
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-slate-200 text-left text-xs uppercase text-slate-400">
+              <tr className="border-b border-slate-200 dark:border-slate-700 text-left text-xs uppercase text-slate-400 dark:text-slate-500">
                 <th className="px-4 py-3 font-medium">Projet</th>
                 <th className="px-4 py-3 font-medium">Client</th>
                 <th className="px-4 py-3 font-medium">Livraison prévue</th>
@@ -99,17 +99,17 @@ export default function ProjectsListPage(): React.JSX.Element {
                 return (
                   <tr
                     key={project.id}
-                    className="border-b border-slate-100 last:border-0 hover:bg-slate-50"
+                    className="border-b border-slate-100 dark:border-slate-800 last:border-0 hover:bg-slate-50 dark:hover:bg-slate-700/60"
                   >
                     <td className="px-4 py-3">
                       <Link
                         to={`/projets/${project.id}`}
-                        className="font-medium text-slate-900 hover:text-brand-600"
+                        className="font-medium text-slate-900 dark:text-slate-100 hover:text-brand-600"
                       >
                         {project.nom}
                       </Link>
                     </td>
-                    <td className="px-4 py-3 text-slate-500">
+                    <td className="px-4 py-3 text-slate-500 dark:text-slate-400">
                       {client ? (
                         <Link to={`/clients/${client.id}`} className="hover:text-brand-600">
                           {client.nom}
@@ -119,7 +119,7 @@ export default function ProjectsListPage(): React.JSX.Element {
                         '—'
                       )}
                     </td>
-                    <td className="px-4 py-3 text-slate-500">{project.dateLivraison || '—'}</td>
+                    <td className="px-4 py-3 text-slate-500 dark:text-slate-400">{project.dateLivraison || '—'}</td>
                     <td className="px-4 py-3">
                       <span
                         className={`inline-block rounded-full px-2.5 py-0.5 text-xs font-medium ${PROJECT_STATUT_STYLES[project.statut]}`}

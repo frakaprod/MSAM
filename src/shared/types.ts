@@ -210,3 +210,35 @@ export interface DocumentTotals {
   totalTTC: number
   parTauxTva: { taux: number; baseHT: number; montantTva: number }[]
 }
+
+// --- Paiements ---
+// Un paiement est créé automatiquement quand une facture passe au statut
+// "payée" (et supprimé si elle en ressort), plutôt que saisi à la main :
+// cf. documentsRepository.ts (createDocument/updateDocument) qui appelle
+// syncPaymentForDocument après chaque écriture.
+
+export interface Payment {
+  id: string
+  documentId: string // facture liée
+  clientId: string
+  montant: number // montant reçu, TTC. Modifiable si besoin (ex: paiement partiel)
+  datePaiement: string // YYYY-MM-DD, date à laquelle la facture a été marquée payée (modifiable)
+  declarer: boolean // à déclarer (fiscalement) ou non
+  createdAt: string
+  updatedAt: string
+}
+
+export type PaymentUpdateInput = Partial<Pick<Payment, 'montant' | 'datePaiement' | 'declarer'>>
+
+// --- Préférences ---
+
+export type ThemeMode = 'clair' | 'sombre' | 'systeme'
+
+export type PageDemarrage = '/agenda' | '/clients' | '/projets' | '/facturation' | '/paiements'
+
+export interface Preferences {
+  theme: ThemeMode
+  pageDemarrage: PageDemarrage
+}
+
+export type PreferencesUpdateInput = Partial<Preferences>

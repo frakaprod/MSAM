@@ -38,7 +38,7 @@ export default function DeleteButton({
             stop(e)
             setConfirming(false)
           }}
-          className="px-1 text-xs text-slate-400 hover:text-slate-600"
+          className="px-1 text-xs text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300"
         >
           Annuler
         </button>
@@ -54,7 +54,7 @@ export default function DeleteButton({
       }}
       title={title}
       aria-label={title}
-      className="flex h-6 w-6 items-center justify-center rounded text-slate-300 hover:bg-red-50 hover:text-red-600"
+      className="flex h-6 w-6 items-center justify-center rounded text-slate-300 dark:text-slate-600 hover:bg-red-50 dark:hover:bg-red-900/30 hover:text-red-600"
     >
       ✕
     </button>

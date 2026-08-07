@@ -123,21 +123,21 @@ export default function ProfileFormPage(): React.JSX.Element {
   }
 
   if (loading) {
-    return <div className="p-8 text-sm text-slate-400">Chargement...</div>
+    return <div className="p-8 text-sm text-slate-400 dark:text-slate-500">Chargement...</div>
   }
 
   return (
     <div className="p-8 pt-6 max-w-2xl mx-auto">
-      <h3 className="text-lg font-medium text-slate-800 mb-4">
+      <h3 className="text-lg font-medium text-slate-800 dark:text-slate-200 mb-4">
         {isEdit ? 'Modifier le profil' : 'Nouveau profil de facturation'}
       </h3>
 
-      <form onSubmit={handleSubmit} className="space-y-5 bg-white rounded-xl border border-slate-200 p-6">
-        {error && <div className="rounded-lg bg-red-50 text-red-700 text-sm px-3 py-2">{error}</div>}
+      <form onSubmit={handleSubmit} className="space-y-5 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-6">
+        {error && <div className="rounded-lg bg-red-50 dark:bg-red-950/40 text-red-700 text-sm px-3 py-2">{error}</div>}
 
         <div className="grid grid-cols-2 gap-4">
           <label className="block">
-            <span className="block text-xs font-medium text-slate-500 mb-1">Nom du profil *</span>
+            <span className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Nom du profil *</span>
             <input
               type="text"
               value={form.nom}
@@ -148,7 +148,7 @@ export default function ProfileFormPage(): React.JSX.Element {
             />
           </label>
           <label className="block">
-            <span className="block text-xs font-medium text-slate-500 mb-1">Statut juridique</span>
+            <span className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Statut juridique</span>
             <select
               value={form.statutJuridique}
               onChange={(e) => update('statutJuridique', e.target.value as StatutJuridique)}
@@ -164,7 +164,7 @@ export default function ProfileFormPage(): React.JSX.Element {
         </div>
 
         <label className="block">
-          <span className="block text-xs font-medium text-slate-500 mb-1">
+          <span className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">
             Raison sociale / nom affiché sur les documents *
           </span>
           <input
@@ -178,7 +178,7 @@ export default function ProfileFormPage(): React.JSX.Element {
 
         <div className="grid grid-cols-2 gap-4">
           <label className="block">
-            <span className="block text-xs font-medium text-slate-500 mb-1">SIRET</span>
+            <span className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">SIRET</span>
             <input
               type="text"
               value={form.siret ?? ''}
@@ -187,7 +187,7 @@ export default function ProfileFormPage(): React.JSX.Element {
             />
           </label>
           <label className="block">
-            <span className="block text-xs font-medium text-slate-500 mb-1">Régime de TVA</span>
+            <span className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Régime de TVA</span>
             <select
               value={form.regimeTva}
               onChange={(e) => update('regimeTva', e.target.value as RegimeTva)}
@@ -204,7 +204,7 @@ export default function ProfileFormPage(): React.JSX.Element {
 
         {form.regimeTva !== 'franchise_en_base' && (
           <label className="block">
-            <span className="block text-xs font-medium text-slate-500 mb-1">N° TVA intracommunautaire</span>
+            <span className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">N° TVA intracommunautaire</span>
             <input
               type="text"
               value={form.tvaIntracom ?? ''}
@@ -215,7 +215,7 @@ export default function ProfileFormPage(): React.JSX.Element {
         )}
 
         <label className="block">
-          <span className="block text-xs font-medium text-slate-500 mb-1">Adresse</span>
+          <span className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Adresse</span>
           <input
             type="text"
             value={form.adresse ?? ''}
@@ -226,7 +226,7 @@ export default function ProfileFormPage(): React.JSX.Element {
 
         <div className="grid grid-cols-3 gap-4">
           <label className="block">
-            <span className="block text-xs font-medium text-slate-500 mb-1">Code postal</span>
+            <span className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Code postal</span>
             <input
               type="text"
               value={form.codePostal ?? ''}
@@ -235,7 +235,7 @@ export default function ProfileFormPage(): React.JSX.Element {
             />
           </label>
           <label className="block">
-            <span className="block text-xs font-medium text-slate-500 mb-1">Ville</span>
+            <span className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Ville</span>
             <input
               type="text"
               value={form.ville ?? ''}
@@ -244,7 +244,7 @@ export default function ProfileFormPage(): React.JSX.Element {
             />
           </label>
           <label className="block">
-            <span className="block text-xs font-medium text-slate-500 mb-1">Pays</span>
+            <span className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Pays</span>
             <input
               type="text"
               value={form.pays}
@@ -256,7 +256,7 @@ export default function ProfileFormPage(): React.JSX.Element {
 
         <div className="grid grid-cols-2 gap-4">
           <label className="block">
-            <span className="block text-xs font-medium text-slate-500 mb-1">Téléphone</span>
+            <span className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Téléphone</span>
             <input
               type="text"
               value={form.telephone ?? ''}
@@ -265,7 +265,7 @@ export default function ProfileFormPage(): React.JSX.Element {
             />
           </label>
           <label className="block">
-            <span className="block text-xs font-medium text-slate-500 mb-1">Email</span>
+            <span className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Email</span>
             <input
               type="email"
               value={form.email ?? ''}
@@ -277,7 +277,7 @@ export default function ProfileFormPage(): React.JSX.Element {
 
         <div className="grid grid-cols-2 gap-4">
           <label className="block">
-            <span className="block text-xs font-medium text-slate-500 mb-1">IBAN</span>
+            <span className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">IBAN</span>
             <input
               type="text"
               value={form.iban ?? ''}
@@ -286,7 +286,7 @@ export default function ProfileFormPage(): React.JSX.Element {
             />
           </label>
           <label className="block">
-            <span className="block text-xs font-medium text-slate-500 mb-1">BIC</span>
+            <span className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">BIC</span>
             <input
               type="text"
               value={form.bic ?? ''}
@@ -298,7 +298,7 @@ export default function ProfileFormPage(): React.JSX.Element {
 
         <div className="grid grid-cols-2 gap-4">
           <label className="block">
-            <span className="block text-xs font-medium text-slate-500 mb-1">Préfixe factures</span>
+            <span className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Préfixe factures</span>
             <input
               type="text"
               value={form.prefixeFacture}
@@ -307,7 +307,7 @@ export default function ProfileFormPage(): React.JSX.Element {
             />
           </label>
           <label className="block">
-            <span className="block text-xs font-medium text-slate-500 mb-1">Prochain n° de facture</span>
+            <span className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Prochain n° de facture</span>
             <input
               type="number"
               min={1}
@@ -320,7 +320,7 @@ export default function ProfileFormPage(): React.JSX.Element {
 
         <div className="grid grid-cols-2 gap-4">
           <label className="block">
-            <span className="block text-xs font-medium text-slate-500 mb-1">Préfixe devis</span>
+            <span className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Préfixe devis</span>
             <input
               type="text"
               value={form.prefixeDevis}
@@ -329,7 +329,7 @@ export default function ProfileFormPage(): React.JSX.Element {
             />
           </label>
           <label className="block">
-            <span className="block text-xs font-medium text-slate-500 mb-1">Prochain n° de devis</span>
+            <span className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Prochain n° de devis</span>
             <input
               type="number"
               min={1}
@@ -341,7 +341,7 @@ export default function ProfileFormPage(): React.JSX.Element {
         </div>
 
         <label className="block">
-          <span className="block text-xs font-medium text-slate-500 mb-1">Conditions de paiement par défaut</span>
+          <span className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Conditions de paiement par défaut</span>
           <input
             type="text"
             value={form.conditionsPaiementParDefaut ?? ''}
@@ -351,7 +351,7 @@ export default function ProfileFormPage(): React.JSX.Element {
         </label>
 
         <label className="block">
-          <span className="block text-xs font-medium text-slate-500 mb-1">
+          <span className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">
             Mentions légales (pied de page des documents)
           </span>
           <textarea
@@ -362,12 +362,12 @@ export default function ProfileFormPage(): React.JSX.Element {
           />
         </label>
 
-        <label className="flex items-center gap-2 text-sm text-slate-700">
+        <label className="flex items-center gap-2 text-sm text-slate-700 dark:text-slate-300">
           <input
             type="checkbox"
             checked={form.parDefaut}
             onChange={(e) => update('parDefaut', e.target.checked)}
-            className="rounded border-slate-300"
+            className="rounded border-slate-300 dark:border-slate-600"
           />
           Utiliser ce profil par défaut pour les nouveaux devis/factures
         </label>
@@ -376,7 +376,7 @@ export default function ProfileFormPage(): React.JSX.Element {
           <button
             type="button"
             onClick={() => navigate(-1)}
-            className="rounded-lg px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100"
+            className="rounded-lg px-4 py-2 text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700"
           >
             Annuler
           </button>

@@ -117,20 +117,20 @@ export default function EventFormPage(): React.JSX.Element {
   }
 
   if (loading) {
-    return <div className="p-8 text-sm text-slate-400">Chargement...</div>
+    return <div className="p-8 text-sm text-slate-400 dark:text-slate-500">Chargement...</div>
   }
 
   return (
     <div className="p-8 max-w-2xl mx-auto">
-      <h2 className="text-2xl font-semibold text-slate-900 mb-6">
+      <h2 className="text-2xl font-semibold text-slate-900 dark:text-slate-100 mb-6">
         {isEdit ? "Modifier l'événement" : 'Nouvel événement'}
       </h2>
 
-      <form onSubmit={handleSubmit} className="space-y-5 bg-white rounded-xl border border-slate-200 p-6">
-        {error && <div className="rounded-lg bg-red-50 text-red-700 text-sm px-3 py-2">{error}</div>}
+      <form onSubmit={handleSubmit} className="space-y-5 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-6">
+        {error && <div className="rounded-lg bg-red-50 dark:bg-red-950/40 text-red-700 text-sm px-3 py-2">{error}</div>}
 
         <label className="block">
-          <span className="block text-xs font-medium text-slate-500 mb-1">Titre *</span>
+          <span className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Titre *</span>
           <input
             type="text"
             value={form.titre}
@@ -142,7 +142,7 @@ export default function EventFormPage(): React.JSX.Element {
 
         <div className="grid grid-cols-2 gap-4">
           <label className="block">
-            <span className="block text-xs font-medium text-slate-500 mb-1">Catégorie</span>
+            <span className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Catégorie</span>
             <select
               value={form.categorie}
               onChange={(e) => update('categorie', e.target.value as EventCategorie)}
@@ -156,7 +156,7 @@ export default function EventFormPage(): React.JSX.Element {
             </select>
           </label>
           <label className="block">
-            <span className="block text-xs font-medium text-slate-500 mb-1">Statut</span>
+            <span className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Statut</span>
             <select
               value={form.statut}
               onChange={(e) => update('statut', e.target.value as EventStatut)}
@@ -173,7 +173,7 @@ export default function EventFormPage(): React.JSX.Element {
 
         <div className="grid grid-cols-3 gap-4">
           <label className="block">
-            <span className="block text-xs font-medium text-slate-500 mb-1">Date *</span>
+            <span className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Date *</span>
             <input
               type="date"
               value={form.date}
@@ -183,7 +183,7 @@ export default function EventFormPage(): React.JSX.Element {
             />
           </label>
           <label className="block">
-            <span className="block text-xs font-medium text-slate-500 mb-1">Heure début</span>
+            <span className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Heure début</span>
             <input
               type="time"
               value={form.heureDebut ?? ''}
@@ -192,7 +192,7 @@ export default function EventFormPage(): React.JSX.Element {
             />
           </label>
           <label className="block">
-            <span className="block text-xs font-medium text-slate-500 mb-1">Heure fin</span>
+            <span className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Heure fin</span>
             <input
               type="time"
               value={form.heureFin ?? ''}
@@ -203,7 +203,7 @@ export default function EventFormPage(): React.JSX.Element {
         </div>
 
         <label className="block">
-          <span className="block text-xs font-medium text-slate-500 mb-1">Lieu</span>
+          <span className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Lieu</span>
           <input
             type="text"
             value={form.lieu ?? ''}
@@ -214,7 +214,7 @@ export default function EventFormPage(): React.JSX.Element {
 
         <div className="grid grid-cols-2 gap-4">
           <label className="block">
-            <span className="block text-xs font-medium text-slate-500 mb-1">Client lié</span>
+            <span className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Client lié</span>
             <select
               value={form.clientId ?? ''}
               onChange={(e) => update('clientId', e.target.value || null)}
@@ -230,7 +230,7 @@ export default function EventFormPage(): React.JSX.Element {
             </select>
           </label>
           <label className="block">
-            <span className="block text-xs font-medium text-slate-500 mb-1">Projet lié</span>
+            <span className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Projet lié</span>
             <select
               value={form.projetId ?? ''}
               onChange={(e) => update('projetId', e.target.value || null)}
@@ -247,7 +247,7 @@ export default function EventFormPage(): React.JSX.Element {
         </div>
 
         <label className="block">
-          <span className="block text-xs font-medium text-slate-500 mb-1">Notes</span>
+          <span className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Notes</span>
           <textarea
             value={form.notes ?? ''}
             onChange={(e) => update('notes', e.target.value)}
@@ -272,7 +272,7 @@ export default function EventFormPage(): React.JSX.Element {
                   <button
                     type="button"
                     onClick={() => setConfirmingDelete(false)}
-                    className="text-slate-500 hover:text-slate-700"
+                    className="text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
                   >
                     Annuler
                   </button>
@@ -291,7 +291,7 @@ export default function EventFormPage(): React.JSX.Element {
             <button
               type="button"
               onClick={() => navigate(-1)}
-              className="rounded-lg px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100"
+              className="rounded-lg px-4 py-2 text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700"
             >
               Annuler
             </button>

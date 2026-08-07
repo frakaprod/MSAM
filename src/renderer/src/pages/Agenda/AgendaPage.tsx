@@ -95,8 +95,8 @@ export default function AgendaPage(): React.JSX.Element {
     <div className="p-8">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h2 className="text-2xl font-semibold text-slate-900">Agenda</h2>
-          <p className="text-sm text-slate-500 mt-1">RDV clients, étapes et deadlines de projets, au même endroit</p>
+          <h2 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">Agenda</h2>
+          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">RDV clients, étapes et deadlines de projets, au même endroit</p>
         </div>
         <Link
           to="/agenda/nouveau"
@@ -110,24 +110,24 @@ export default function AgendaPage(): React.JSX.Element {
         <div className="flex items-center gap-2">
           <button
             onClick={goToPreviousMonth}
-            className="rounded-lg border border-slate-300 w-8 h-8 flex items-center justify-center text-slate-600 hover:bg-slate-100"
+            className="rounded-lg border border-slate-300 dark:border-slate-600 w-8 h-8 flex items-center justify-center text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700"
             aria-label="Mois précédent"
           >
             ‹
           </button>
-          <h3 className="text-lg font-medium text-slate-800 w-40 text-center capitalize">
+          <h3 className="text-lg font-medium text-slate-800 dark:text-slate-200 w-40 text-center capitalize">
             {formatMonthLabel(currentDate)}
           </h3>
           <button
             onClick={goToNextMonth}
-            className="rounded-lg border border-slate-300 w-8 h-8 flex items-center justify-center text-slate-600 hover:bg-slate-100"
+            className="rounded-lg border border-slate-300 dark:border-slate-600 w-8 h-8 flex items-center justify-center text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700"
             aria-label="Mois suivant"
           >
             ›
           </button>
           <button
             onClick={goToToday}
-            className="ml-2 rounded-lg border border-slate-300 px-3 py-1.5 text-sm text-slate-600 hover:bg-slate-100"
+            className="ml-2 rounded-lg border border-slate-300 dark:border-slate-600 px-3 py-1.5 text-sm text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700"
           >
             Aujourd'hui
           </button>
@@ -136,7 +136,7 @@ export default function AgendaPage(): React.JSX.Element {
         <select
           value={categorieFilter}
           onChange={(e) => setCategorieFilter(e.target.value as EventCategorie | 'toutes')}
-          className="rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+          className="rounded-lg border border-slate-300 dark:border-slate-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
         >
           <option value="toutes">Toutes les catégories</option>
           {Object.entries(CATEGORIE_LABELS).map(([value, label]) => (
@@ -151,7 +151,7 @@ export default function AgendaPage(): React.JSX.Element {
           demander à François de le deviner en survolant les cases. Ordre
           volontairement manuel (deadline projet entre Montage et Retours
           client) plutôt que l'ordre de déclaration du type. */}
-      <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 mb-4 text-xs text-slate-500">
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 mb-4 text-xs text-slate-500 dark:text-slate-400">
         {(['rdv_client', 'tournage', 'montage'] as EventCategorie[]).map((value) => (
           <span key={value} className="flex items-center gap-1.5">
             <span className={`w-2 h-2 rounded-full ${CATEGORIE_DOT[value]}`} />
@@ -171,12 +171,12 @@ export default function AgendaPage(): React.JSX.Element {
       </div>
 
       <div className="flex gap-6">
-        <div className="flex-1 bg-white rounded-xl border border-slate-200 overflow-hidden">
-          <div className="grid grid-cols-7 border-b border-slate-200">
+        <div className="flex-1 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden">
+          <div className="grid grid-cols-7 border-b border-slate-200 dark:border-slate-700">
             {['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'].map((jour) => (
               <div
                 key={jour}
-                className="px-2 py-2 text-center text-xs font-medium uppercase text-slate-400"
+                className="px-2 py-2 text-center text-xs font-medium uppercase text-slate-400 dark:text-slate-500"
               >
                 {jour}
               </div>
@@ -196,17 +196,17 @@ export default function AgendaPage(): React.JSX.Element {
                 <button
                   key={iso}
                   onClick={() => setSelectedDay(iso)}
-                  className={`min-h-24 border-b border-r border-slate-100 p-1.5 text-left align-top flex flex-col gap-1 hover:bg-slate-50 transition-colors ${
+                  className={`min-h-24 border-b border-r border-slate-100 dark:border-slate-800 p-1.5 text-left align-top flex flex-col gap-1 hover:bg-slate-50 dark:hover:bg-slate-700/60 transition-colors ${
                     isSelected ? 'ring-2 ring-inset ring-brand-500' : ''
-                  } ${!isCurrentMonth ? 'bg-slate-50/50' : ''}`}
+                  } ${!isCurrentMonth ? 'bg-slate-50/50 dark:bg-slate-800/40' : ''}`}
                 >
                   <span
                     className={`text-xs font-medium w-5 h-5 flex items-center justify-center rounded-full ${
                       isToday
                         ? 'bg-brand-600 text-white'
                         : isCurrentMonth
-                          ? 'text-slate-700'
-                          : 'text-slate-400'
+                          ? 'text-slate-700 dark:text-slate-300'
+                          : 'text-slate-400 dark:text-slate-500'
                     }`}
                   >
                     {day.getDate()}
@@ -234,7 +234,7 @@ export default function AgendaPage(): React.JSX.Element {
                       </span>
                     ))}
                     {totalItems > 3 && (
-                      <span className="text-[10px] text-slate-400 px-1">
+                      <span className="text-[10px] text-slate-400 dark:text-slate-500 px-1">
                         +{totalItems - 3} autre{totalItems - 3 > 1 ? 's' : ''}
                       </span>
                     )}
@@ -246,8 +246,8 @@ export default function AgendaPage(): React.JSX.Element {
         </div>
 
         <div className="w-80 shrink-0">
-          <div className="bg-white rounded-xl border border-slate-200 p-4 sticky top-8">
-            <h3 className="text-sm font-medium text-slate-800 capitalize">
+          <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-4 sticky top-8">
+            <h3 className="text-sm font-medium text-slate-800 dark:text-slate-200 capitalize">
               {formatDayLabel(selectedDay)}
             </h3>
             <Link
@@ -259,7 +259,7 @@ export default function AgendaPage(): React.JSX.Element {
 
             <div className="mt-4 space-y-2">
               {selectedDayDeadlines.length === 0 && selectedDayEvents.length === 0 ? (
-                <p className="text-sm text-slate-400">Rien de prévu ce jour.</p>
+                <p className="text-sm text-slate-400 dark:text-slate-500">Rien de prévu ce jour.</p>
               ) : (
                 <>
                   {selectedDayDeadlines.map((project) => {
@@ -268,16 +268,16 @@ export default function AgendaPage(): React.JSX.Element {
                       <Link
                         key={`deadline-${project.id}`}
                         to={`/projets/${project.id}`}
-                        className="block rounded-lg border border-red-200 bg-red-50/50 p-3 hover:border-red-300"
+                        className="block rounded-lg border border-red-200 dark:border-red-900 bg-red-50/50 dark:bg-red-950/30 p-3 hover:border-red-300 dark:hover:border-red-700"
                       >
                         <span
                           className={`inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-[11px] font-medium ${DEADLINE_STYLE}`}
                         >
                           🚩 {DEADLINE_LABEL}
                         </span>
-                        <p className="text-sm font-medium text-slate-800 mt-1.5">{project.nom}</p>
+                        <p className="text-sm font-medium text-slate-800 dark:text-slate-200 mt-1.5">{project.nom}</p>
                         {client && (
-                          <p className="text-xs text-slate-500 mt-0.5">
+                          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                             {client.nom}
                             {client.prenom ? ` ${client.prenom}` : ''}
                           </p>
@@ -292,7 +292,7 @@ export default function AgendaPage(): React.JSX.Element {
                       <Link
                         key={event.id}
                         to={`/agenda/${event.id}/modifier`}
-                        className="block rounded-lg border border-slate-200 p-3 hover:border-brand-300 hover:bg-brand-50/40"
+                        className="block rounded-lg border border-slate-200 dark:border-slate-700 p-3 hover:border-brand-300 dark:hover:border-brand-600 hover:bg-brand-50/40 dark:hover:bg-brand-900/30"
                       >
                         <div className="flex items-center justify-between">
                           <span
@@ -301,21 +301,21 @@ export default function AgendaPage(): React.JSX.Element {
                             {CATEGORIE_LABELS[event.categorie]}
                           </span>
                           {event.heureDebut && (
-                            <span className="text-xs text-slate-400">
+                            <span className="text-xs text-slate-400 dark:text-slate-500">
                               {event.heureDebut}
                               {event.heureFin ? ` - ${event.heureFin}` : ''}
                             </span>
                           )}
                         </div>
-                        <p className="text-sm font-medium text-slate-800 mt-1.5">{event.titre}</p>
+                        <p className="text-sm font-medium text-slate-800 dark:text-slate-200 mt-1.5">{event.titre}</p>
                         {(client || project) && (
-                          <p className="text-xs text-slate-500 mt-0.5">
+                          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                             {[client ? `${client.nom}${client.prenom ? ` ${client.prenom}` : ''}` : null, project?.nom]
                               .filter(Boolean)
                               .join(' · ')}
                           </p>
                         )}
-                        {event.lieu && <p className="text-xs text-slate-400 mt-0.5">📍 {event.lieu}</p>}
+                        {event.lieu && <p className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">📍 {event.lieu}</p>}
                       </Link>
                     )
                   })}

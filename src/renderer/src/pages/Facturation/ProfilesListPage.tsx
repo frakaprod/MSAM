@@ -27,7 +27,7 @@ export default function ProfilesListPage(): React.JSX.Element {
   return (
     <div className="p-8 pt-6 max-w-3xl mx-auto">
       <div className="flex items-center justify-between mb-6">
-        <p className="text-sm text-slate-500">
+        <p className="text-sm text-slate-500 dark:text-slate-400">
           {profiles.length} profil{profiles.length > 1 ? 's' : ''} de facturation
         </p>
         <Link
@@ -39,8 +39,8 @@ export default function ProfilesListPage(): React.JSX.Element {
       </div>
 
       {profiles.length === 0 ? (
-        <div className="bg-white rounded-xl border border-dashed border-slate-300 p-8 text-center">
-          <p className="text-sm text-slate-500">
+        <div className="bg-white dark:bg-slate-800 rounded-xl border border-dashed border-slate-300 dark:border-slate-600 p-8 text-center">
+          <p className="text-sm text-slate-500 dark:text-slate-400">
             Aucun profil de facturation pour le moment. Crée-en un pour pouvoir émettre des devis et
             factures — il porte tes informations légales (SIRET, adresse, IBAN, régime de TVA...).
           </p>
@@ -57,23 +57,23 @@ export default function ProfilesListPage(): React.JSX.Element {
             <div
               key={profile.id}
               onClick={() => navigate(`/facturation/profils/${profile.id}/modifier`)}
-              className="flex items-center justify-between bg-white rounded-xl border border-slate-200 p-4 hover:border-brand-300 cursor-pointer"
+              className="flex items-center justify-between bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-4 hover:border-brand-300 dark:hover:border-brand-600 cursor-pointer"
             >
               <div className="flex items-center justify-between flex-1">
                 <div>
-                  <p className="text-sm font-medium text-slate-900">
+                  <p className="text-sm font-medium text-slate-900 dark:text-slate-100">
                     {profile.nom}
                     {profile.parDefaut && (
-                      <span className="ml-2 inline-block rounded-full bg-brand-100 text-brand-700 text-xs px-2 py-0.5 align-middle">
+                      <span className="ml-2 inline-block rounded-full bg-brand-100 dark:bg-brand-900/40 text-brand-700 text-xs px-2 py-0.5 align-middle">
                         Par défaut
                       </span>
                     )}
                   </p>
-                  <p className="text-xs text-slate-500 mt-1">
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
                     {profile.raisonSociale} · {STATUT_JURIDIQUE_LABELS[profile.statutJuridique]}
                   </p>
                 </div>
-                <div className="text-right text-xs text-slate-400">
+                <div className="text-right text-xs text-slate-400 dark:text-slate-500">
                   <p>Factures : {profile.prefixeFacture}{String(profile.prochainNumeroFacture).padStart(3, '0')}</p>
                   <p>Devis : {profile.prefixeDevis}{String(profile.prochainNumeroDevis).padStart(3, '0')}</p>
                 </div>
@@ -94,7 +94,7 @@ export default function ProfilesListPage(): React.JSX.Element {
       )}
 
       {!loading && profiles.length > 0 && (
-        <p className="mt-4 text-xs text-slate-400">
+        <p className="mt-4 text-xs text-slate-400 dark:text-slate-500">
           Tu peux créer plusieurs profils si tu factures sous plusieurs statuts/sociétés. Le profil
           "par défaut" est pré-sélectionné à la création d'un devis ou d'une facture.
         </p>

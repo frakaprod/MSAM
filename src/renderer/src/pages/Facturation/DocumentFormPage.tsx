@@ -159,14 +159,14 @@ export default function DocumentFormPage({ type }: { type: DocumentType }): Reac
   }
 
   if (loading) {
-    return <div className="p-8 text-sm text-slate-400">Chargement...</div>
+    return <div className="p-8 text-sm text-slate-400 dark:text-slate-500">Chargement...</div>
   }
 
   if (!loading && profiles.length === 0) {
     return (
       <div className="p-8 max-w-2xl mx-auto">
-        <div className="bg-white rounded-xl border border-dashed border-slate-300 p-8 text-center">
-          <p className="text-sm text-slate-600">
+        <div className="bg-white dark:bg-slate-800 rounded-xl border border-dashed border-slate-300 dark:border-slate-600 p-8 text-center">
+          <p className="text-sm text-slate-600 dark:text-slate-300">
             Il faut d'abord créer un profil de facturation (tes informations légales) avant de pouvoir
             émettre un {label}.
           </p>
@@ -185,17 +185,17 @@ export default function DocumentFormPage({ type }: { type: DocumentType }): Reac
 
   return (
     <div className="p-8 max-w-3xl mx-auto">
-      <h2 className="text-2xl font-semibold text-slate-900 mb-6">
+      <h2 className="text-2xl font-semibold text-slate-900 dark:text-slate-100 mb-6">
         {isEdit ? `Modifier le ${label}` : `Nouveau ${label}`}
-        {existingNumero && <span className="text-slate-400 font-normal ml-2 text-lg">{existingNumero}</span>}
+        {existingNumero && <span className="text-slate-400 dark:text-slate-500 font-normal ml-2 text-lg">{existingNumero}</span>}
       </h2>
 
-      <form onSubmit={handleSubmit} className="space-y-5 bg-white rounded-xl border border-slate-200 p-6">
-        {error && <div className="rounded-lg bg-red-50 text-red-700 text-sm px-3 py-2">{error}</div>}
+      <form onSubmit={handleSubmit} className="space-y-5 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-6">
+        {error && <div className="rounded-lg bg-red-50 dark:bg-red-950/40 text-red-700 text-sm px-3 py-2">{error}</div>}
 
         <div className="grid grid-cols-2 gap-4">
           <label className="block">
-            <span className="block text-xs font-medium text-slate-500 mb-1">Profil de facturation</span>
+            <span className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Profil de facturation</span>
             <select value={profilId} onChange={(e) => setProfilId(e.target.value)} className="input">
               {profiles.map((p) => (
                 <option key={p.id} value={p.id}>
@@ -205,7 +205,7 @@ export default function DocumentFormPage({ type }: { type: DocumentType }): Reac
             </select>
           </label>
           <label className="block">
-            <span className="block text-xs font-medium text-slate-500 mb-1">Client *</span>
+            <span className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Client *</span>
             <select value={clientId} onChange={(e) => setClientId(e.target.value)} className="input" required>
               <option value="">— Sélectionner —</option>
               {clients.map((c) => (
@@ -220,7 +220,7 @@ export default function DocumentFormPage({ type }: { type: DocumentType }): Reac
 
         <div className="grid grid-cols-2 gap-4">
           <label className="block">
-            <span className="block text-xs font-medium text-slate-500 mb-1">Projet lié</span>
+            <span className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Projet lié</span>
             <select
               value={projetId ?? ''}
               onChange={(e) => setProjetId(e.target.value || null)}
@@ -235,7 +235,7 @@ export default function DocumentFormPage({ type }: { type: DocumentType }): Reac
             </select>
           </label>
           <label className="block">
-            <span className="block text-xs font-medium text-slate-500 mb-1">Statut</span>
+            <span className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Statut</span>
             <select
               value={statut}
               onChange={(e) => setStatut(e.target.value as DocumentStatut)}
@@ -252,7 +252,7 @@ export default function DocumentFormPage({ type }: { type: DocumentType }): Reac
 
         <div className="grid grid-cols-2 gap-4">
           <label className="block">
-            <span className="block text-xs font-medium text-slate-500 mb-1">Date d'émission *</span>
+            <span className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Date d'émission *</span>
             <input
               type="date"
               value={dateEmission}
@@ -262,7 +262,7 @@ export default function DocumentFormPage({ type }: { type: DocumentType }): Reac
             />
           </label>
           <label className="block">
-            <span className="block text-xs font-medium text-slate-500 mb-1">
+            <span className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">
               {type === 'devis' ? 'Date de validité' : "Date d'échéance"}
             </span>
             <input
@@ -275,7 +275,7 @@ export default function DocumentFormPage({ type }: { type: DocumentType }): Reac
         </div>
 
         {franchiseEnBase && (
-          <p className="text-xs text-slate-500 bg-slate-50 rounded-lg px-3 py-2">
+          <p className="text-xs text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-900 rounded-lg px-3 py-2">
             Ce profil est en franchise en base : la TVA n'est pas applicable (art. 293 B du CGI), les
             lignes ci-dessous sont donc en hors-taxe uniquement.
           </p>
@@ -283,7 +283,7 @@ export default function DocumentFormPage({ type }: { type: DocumentType }): Reac
 
         <div>
           <div className="flex items-center justify-between mb-2">
-            <span className="block text-xs font-medium text-slate-500">Lignes</span>
+            <span className="block text-xs font-medium text-slate-500 dark:text-slate-400">Lignes</span>
             <button
               type="button"
               onClick={addLigne}
@@ -293,10 +293,10 @@ export default function DocumentFormPage({ type }: { type: DocumentType }): Reac
             </button>
           </div>
 
-          <div className="border border-slate-200 rounded-lg overflow-hidden">
+          <div className="border border-slate-200 dark:border-slate-700 rounded-lg overflow-hidden">
             <table className="w-full text-sm">
               <thead>
-                <tr className="bg-slate-50 text-left text-xs uppercase text-slate-400">
+                <tr className="bg-slate-50 dark:bg-slate-900 text-left text-xs uppercase text-slate-400 dark:text-slate-500">
                   <th className="px-3 py-2 font-medium">Désignation</th>
                   <th className="px-3 py-2 font-medium w-20">Qté</th>
                   <th className="px-3 py-2 font-medium w-28">PU HT</th>
@@ -307,7 +307,7 @@ export default function DocumentFormPage({ type }: { type: DocumentType }): Reac
               </thead>
               <tbody>
                 {lignes.map((ligne) => (
-                  <tr key={ligne.id} className="border-t border-slate-100">
+                  <tr key={ligne.id} className="border-t border-slate-100 dark:border-slate-800">
                     <td className="px-3 py-2">
                       <input
                         type="text"
@@ -352,14 +352,14 @@ export default function DocumentFormPage({ type }: { type: DocumentType }): Reac
                         </select>
                       </td>
                     )}
-                    <td className="px-3 py-2 text-right text-slate-600">
+                    <td className="px-3 py-2 text-right text-slate-600 dark:text-slate-300">
                       {formatMontant(ligne.quantite * ligne.prixUnitaireHT)}
                     </td>
                     <td className="px-1 py-2">
                       <button
                         type="button"
                         onClick={() => removeLigne(ligne.id)}
-                        className="text-slate-400 hover:text-red-600"
+                        className="text-slate-400 dark:text-slate-500 hover:text-red-600"
                         title="Supprimer la ligne"
                       >
                         ✕
@@ -373,17 +373,17 @@ export default function DocumentFormPage({ type }: { type: DocumentType }): Reac
 
           <div className="mt-3 flex justify-end">
             <div className="w-64 space-y-1 text-sm">
-              <div className="flex justify-between text-slate-600">
+              <div className="flex justify-between text-slate-600 dark:text-slate-300">
                 <span>Total HT</span>
                 <span>{formatMontant(totals.totalHT)}</span>
               </div>
               {totals.parTauxTva.map((t) => (
-                <div key={t.taux} className="flex justify-between text-slate-500 text-xs">
+                <div key={t.taux} className="flex justify-between text-slate-500 dark:text-slate-400 text-xs">
                   <span>dont TVA {t.taux}%</span>
                   <span>{formatMontant(t.montantTva)}</span>
                 </div>
               ))}
-              <div className="flex justify-between font-semibold text-slate-900 pt-1 border-t border-slate-200">
+              <div className="flex justify-between font-semibold text-slate-900 dark:text-slate-100 pt-1 border-t border-slate-200 dark:border-slate-700">
                 <span>Total TTC</span>
                 <span>{formatMontant(totals.totalTTC)}</span>
               </div>
@@ -392,7 +392,7 @@ export default function DocumentFormPage({ type }: { type: DocumentType }): Reac
         </div>
 
         <label className="block">
-          <span className="block text-xs font-medium text-slate-500 mb-1">Conditions de paiement</span>
+          <span className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Conditions de paiement</span>
           <input
             type="text"
             value={conditionsPaiement}
@@ -402,7 +402,7 @@ export default function DocumentFormPage({ type }: { type: DocumentType }): Reac
         </label>
 
         <label className="block">
-          <span className="block text-xs font-medium text-slate-500 mb-1">Notes / conditions particulières</span>
+          <span className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Notes / conditions particulières</span>
           <textarea
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
@@ -415,7 +415,7 @@ export default function DocumentFormPage({ type }: { type: DocumentType }): Reac
           <button
             type="button"
             onClick={() => navigate(-1)}
-            className="rounded-lg px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100"
+            className="rounded-lg px-4 py-2 text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700"
           >
             Annuler
           </button>

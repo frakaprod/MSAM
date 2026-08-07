@@ -10,8 +10,8 @@ export default function FacturationLayout(): React.JSX.Element {
   return (
     <div>
       <div className="px-8 pt-8">
-        <h2 className="text-2xl font-semibold text-slate-900 mb-4">Facturation</h2>
-        <div className="flex gap-1 border-b border-slate-200">
+        <h2 className="text-2xl font-semibold text-slate-900 dark:text-slate-100 mb-4">Facturation</h2>
+        <div className="flex gap-1 border-b border-slate-200 dark:border-slate-700">
           {tabs.map((tab) => (
             <NavLink
               key={tab.to}
@@ -20,7 +20,7 @@ export default function FacturationLayout(): React.JSX.Element {
                 `px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors ${
                   isActive
                     ? 'border-brand-600 text-brand-700'
-                    : 'border-transparent text-slate-500 hover:text-slate-700'
+                    : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
                 }`
               }
             >

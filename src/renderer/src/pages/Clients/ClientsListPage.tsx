@@ -11,9 +11,9 @@ const STATUT_LABELS: Record<ClientStatut, string> = {
 }
 
 const STATUT_STYLES: Record<ClientStatut, string> = {
-  prospect: 'bg-amber-100 text-amber-800',
-  actif: 'bg-emerald-100 text-emerald-800',
-  archive: 'bg-slate-200 text-slate-600'
+  prospect: 'bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300',
+  actif: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300',
+  archive: 'bg-slate-200 text-slate-600 dark:bg-slate-700 dark:text-slate-300'
 }
 
 export default function ClientsListPage(): React.JSX.Element {
@@ -53,8 +53,8 @@ export default function ClientsListPage(): React.JSX.Element {
     <div className="p-8 max-w-5xl mx-auto">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h2 className="text-2xl font-semibold text-slate-900">Base clients</h2>
-          <p className="text-sm text-slate-500 mt-1">
+          <h2 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">Base clients</h2>
+          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
             {counts.total} client{counts.total > 1 ? 's' : ''}
           </p>
         </div>
@@ -72,12 +72,12 @@ export default function ClientsListPage(): React.JSX.Element {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Rechercher (nom, email, téléphone, SIRET, ville...)"
-          className="flex-1 rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+          className="flex-1 rounded-lg border border-slate-300 dark:border-slate-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
         />
         <select
           value={statutFilter}
           onChange={(e) => setStatutFilter(e.target.value as ClientStatut | 'tous')}
-          className="rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+          className="rounded-lg border border-slate-300 dark:border-slate-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
         >
           <option value="tous">Tous les statuts</option>
           <option value="prospect">Prospect</option>
@@ -86,17 +86,17 @@ export default function ClientsListPage(): React.JSX.Element {
         </select>
       </div>
 
-      <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+      <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden">
         {loading ? (
-          <div className="p-8 text-center text-sm text-slate-400">Chargement...</div>
+          <div className="p-8 text-center text-sm text-slate-400 dark:text-slate-500">Chargement...</div>
         ) : clients.length === 0 ? (
-          <div className="p-8 text-center text-sm text-slate-400">
+          <div className="p-8 text-center text-sm text-slate-400 dark:text-slate-500">
             Aucun client pour le moment.
           </div>
         ) : (
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-slate-200 text-left text-xs uppercase text-slate-400">
+              <tr className="border-b border-slate-200 dark:border-slate-700 text-left text-xs uppercase text-slate-400 dark:text-slate-500">
                 <th className="px-4 py-3 font-medium">Nom</th>
                 <th className="px-4 py-3 font-medium">Type</th>
                 <th className="px-4 py-3 font-medium">Contact</th>
@@ -109,19 +109,19 @@ export default function ClientsListPage(): React.JSX.Element {
               {clients.map((client) => (
                 <tr
                   key={client.id}
-                  className="border-b border-slate-100 last:border-0 hover:bg-slate-50 cursor-pointer"
+                  className="border-b border-slate-100 dark:border-slate-800 last:border-0 hover:bg-slate-50 dark:hover:bg-slate-700/60 cursor-pointer"
                 >
                   <td className="px-4 py-3">
-                    <Link to={`/clients/${client.id}`} className="font-medium text-slate-900 hover:text-brand-600">
+                    <Link to={`/clients/${client.id}`} className="font-medium text-slate-900 dark:text-slate-100 hover:text-brand-600">
                       {client.nom}
                       {client.prenom ? ` ${client.prenom}` : ''}
                     </Link>
                   </td>
-                  <td className="px-4 py-3 text-slate-500 capitalize">{client.type}</td>
-                  <td className="px-4 py-3 text-slate-500">
+                  <td className="px-4 py-3 text-slate-500 dark:text-slate-400 capitalize">{client.type}</td>
+                  <td className="px-4 py-3 text-slate-500 dark:text-slate-400">
                     {client.email || client.telephone || '—'}
                   </td>
-                  <td className="px-4 py-3 text-slate-500">{client.ville || '—'}</td>
+                  <td className="px-4 py-3 text-slate-500 dark:text-slate-400">{client.ville || '—'}</td>
                   <td className="px-4 py-3">
                     <span
                       className={`inline-block rounded-full px-2.5 py-0.5 text-xs font-medium ${STATUT_STYLES[client.statut]}`}

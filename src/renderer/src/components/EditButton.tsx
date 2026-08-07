@@ -19,7 +19,7 @@ export default function EditButton({
       onClick={(e) => e.stopPropagation()}
       title={title}
       aria-label={title}
-      className="flex h-6 w-6 items-center justify-center rounded text-slate-300 hover:bg-brand-50 hover:text-brand-600"
+      className="flex h-6 w-6 items-center justify-center rounded text-slate-300 dark:text-slate-600 hover:bg-brand-50 dark:hover:bg-brand-900/40 hover:text-brand-600"
     >
       ✎
     </Link>

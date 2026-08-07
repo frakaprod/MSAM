@@ -1,19 +1,60 @@
 @import "tailwindcss";
 
+/* Variante "dark" pilotée par une classe (plutôt que la préférence système
+   seule), posée sur <html> par lib/theme.ts selon la préférence enregistrée
+   dans Préférences. Voir aussi main.tsx pour l'application au démarrage. */
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
   --color-brand-50: #f5f7ff;
   --color-brand-100: #ecefff;
+  --color-brand-200: #d6dbff;
+  --color-brand-300: #b3baff;
+  --color-brand-400: #8891ff;
   --color-brand-500: #4f5eff;
   --color-brand-600: #3d4cf0;
   --color-brand-700: #2f3bd6;
+  --color-brand-800: #2530ad;
+  --color-brand-900: #1f2789;
+  --color-brand-950: #141a5c;
+}
+
+:root {
+  color-scheme: light;
+}
+
+.dark {
+  color-scheme: dark;
 }
 
 body {
-  @apply bg-slate-50 text-slate-900 antialiased;
+  @apply bg-slate-50 text-slate-900 antialiased dark:bg-slate-900 dark:text-slate-100;
 }
 
 .input {
-  @apply w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500;
+  @apply w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100;
+}
+
+/* Filet de sécurité pour les <input>/<select>/<textarea> qui n'utilisent pas
+   .input (barres de recherche, filtres) : sans ça ils gardent un fond blanc
+   du navigateur même en mode sombre. */
+input:not([type='checkbox']):not([type='radio']),
+select,
+textarea {
+  @apply dark:bg-slate-800 dark:text-slate-100 dark:border-slate-600;
+}
+
+/* Scrollbars sombres, sinon la scrollbar système reste claire et détonne. */
+.dark ::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+.dark ::-webkit-scrollbar-track {
+  background: transparent;
+}
+.dark ::-webkit-scrollbar-thumb {
+  background-color: #334155;
+  border-radius: 9999px;
 }
 
 @media print {

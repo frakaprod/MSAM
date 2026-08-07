@@ -1,6 +1,7 @@
 import { randomUUID } from 'crypto'
 import { getData, persist } from './store'
 import { reserveNextNumero } from './billingProfilesRepository'
+import { deletePaymentByDocumentId, syncPaymentForDocument } from './paymentsRepository'
 import type {
   DocumentFilters,
   DocumentType,
@@ -68,6 +69,7 @@ export function createDocument(input: InvoiceDocumentInput): InvoiceDocument {
 
   data.documents.push(document)
   persist()
+  syncPaymentForDocument(document)
 
   return document
 }
@@ -94,6 +96,7 @@ export function updateDocument(id: string, input: InvoiceDocumentInput): Invoice
 
   data.documents[index] = updated
   persist()
+  syncPaymentForDocument(updated)
 
   return updated
 }
@@ -102,6 +105,7 @@ export function deleteDocument(id: string): void {
   const data = getData()
   data.documents = data.documents.filter((d) => d.id !== id)
   persist()
+  deletePaymentByDocumentId(id)
 }
 
 /**

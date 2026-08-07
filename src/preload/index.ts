@@ -11,6 +11,10 @@ import type {
   EventInput,
   InvoiceDocument,
   InvoiceDocumentInput,
+  Payment,
+  PaymentUpdateInput,
+  Preferences,
+  PreferencesUpdateInput,
   Project,
   ProjectFilters,
   ProjectInput
@@ -77,6 +81,18 @@ const api = {
       ipcRenderer.invoke('documents:delete', id),
     convertToFacture: (devisId: string): Promise<InvoiceDocument | null> =>
       ipcRenderer.invoke('documents:convertToFacture', devisId)
+  },
+  payments: {
+    list: (): Promise<Payment[]> => ipcRenderer.invoke('payments:list'),
+    update: (id: string, input: PaymentUpdateInput): Promise<Payment | null> =>
+      ipcRenderer.invoke('payments:update', id, input),
+    delete: (id: string): Promise<boolean> => ipcRenderer.invoke('payments:delete', id)
+  },
+  preferences: {
+    get: (): Promise<Preferences> => ipcRenderer.invoke('preferences:get'),
+    update: (input: PreferencesUpdateInput): Promise<Preferences> =>
+      ipcRenderer.invoke('preferences:update', input),
+    getSync: (): Preferences => ipcRenderer.sendSync('preferences:get-sync')
   }
 }
 

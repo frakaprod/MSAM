@@ -36,13 +36,13 @@ export default function ClientDetailPage(): React.JSX.Element {
   }
 
   if (loading) {
-    return <div className="p-8 text-sm text-slate-400">Chargement...</div>
+    return <div className="p-8 text-sm text-slate-400 dark:text-slate-500">Chargement...</div>
   }
 
   if (!client) {
     return (
       <div className="p-8">
-        <p className="text-sm text-slate-500">Client introuvable.</p>
+        <p className="text-sm text-slate-500 dark:text-slate-400">Client introuvable.</p>
         <Link to="/clients" className="text-brand-600 text-sm">
           ← Retour à la liste
         </Link>
@@ -52,30 +52,30 @@ export default function ClientDetailPage(): React.JSX.Element {
 
   return (
     <div className="p-8 max-w-3xl mx-auto">
-      <Link to="/clients" className="text-sm text-slate-500 hover:text-brand-600">
+      <Link to="/clients" className="text-sm text-slate-500 dark:text-slate-400 hover:text-brand-600">
         ← Retour à la liste
       </Link>
 
       <div className="mt-4 flex items-start justify-between">
         <div>
-          <h2 className="text-2xl font-semibold text-slate-900">
+          <h2 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">
             {client.nom}
             {client.prenom ? ` ${client.prenom}` : ''}
           </h2>
-          <p className="text-sm text-slate-500 capitalize mt-1">
+          <p className="text-sm text-slate-500 dark:text-slate-400 capitalize mt-1">
             {client.type} · {client.statut}
           </p>
         </div>
         <div className="flex gap-2">
           <Link
             to={`/clients/${client.id}/modifier`}
-            className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
+            className="rounded-lg border border-slate-300 dark:border-slate-600 px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/60"
           >
             Modifier
           </Link>
           <button
             onClick={() => setConfirmingDelete(true)}
-            className="rounded-lg border border-red-200 px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50"
+            className="rounded-lg border border-red-200 dark:border-red-900 px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30"
           >
             Supprimer
           </button>
@@ -83,7 +83,7 @@ export default function ClientDetailPage(): React.JSX.Element {
       </div>
 
       {confirmingDelete && (
-        <div className="mt-4 rounded-lg border border-red-200 bg-red-50 p-4 text-sm">
+        <div className="mt-4 rounded-lg border border-red-200 dark:border-red-900 bg-red-50 dark:bg-red-950/40 p-4 text-sm">
           <p className="text-red-700">
             Supprimer définitivement ce client ? Cette action est irréversible.
           </p>
@@ -96,7 +96,7 @@ export default function ClientDetailPage(): React.JSX.Element {
             </button>
             <button
               onClick={() => setConfirmingDelete(false)}
-              className="rounded-lg px-3 py-1.5 text-slate-600 hover:bg-slate-100"
+              className="rounded-lg px-3 py-1.5 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700"
             >
               Annuler
             </button>
@@ -128,7 +128,7 @@ export default function ClientDetailPage(): React.JSX.Element {
           {client.tags.map((tag) => (
             <span
               key={tag}
-              className="rounded-full bg-slate-200 text-slate-700 text-xs px-2.5 py-1"
+              className="rounded-full bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs px-2.5 py-1"
             >
               {tag}
             </span>
@@ -137,14 +137,14 @@ export default function ClientDetailPage(): React.JSX.Element {
       )}
 
       {client.notes && (
-        <div className="mt-6 bg-white rounded-xl border border-slate-200 p-4">
-          <h3 className="text-xs font-medium text-slate-500 mb-2">Notes</h3>
-          <p className="text-sm text-slate-700 whitespace-pre-wrap">{client.notes}</p>
+        <div className="mt-6 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-4">
+          <h3 className="text-xs font-medium text-slate-500 dark:text-slate-400 mb-2">Notes</h3>
+          <p className="text-sm text-slate-700 dark:text-slate-300 whitespace-pre-wrap">{client.notes}</p>
         </div>
       )}
 
       <div className="mt-6 flex items-center justify-between">
-        <h3 className="text-sm font-medium text-slate-700">Projets</h3>
+        <h3 className="text-sm font-medium text-slate-700 dark:text-slate-300">Projets</h3>
         <Link
           to={`/projets/nouveau?clientId=${client.id}`}
           className="text-sm text-brand-600 hover:text-brand-700 font-medium"
@@ -152,20 +152,20 @@ export default function ClientDetailPage(): React.JSX.Element {
           + Nouveau projet
         </Link>
       </div>
-      <div className="mt-3 bg-white rounded-xl border border-slate-200 divide-y divide-slate-100">
+      <div className="mt-3 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 divide-y divide-slate-100 dark:divide-slate-800">
         {projects.length === 0 ? (
-          <div className="p-4 text-sm text-slate-400">Aucun projet pour ce client.</div>
+          <div className="p-4 text-sm text-slate-400 dark:text-slate-500">Aucun projet pour ce client.</div>
         ) : (
           projects.map((project) => (
             <Link
               key={project.id}
               to={`/projets/${project.id}`}
-              className="flex items-center justify-between px-4 py-3 hover:bg-slate-50"
+              className="flex items-center justify-between px-4 py-3 hover:bg-slate-50 dark:hover:bg-slate-700/60"
             >
               <div>
-                <p className="text-sm font-medium text-slate-800">{project.nom}</p>
+                <p className="text-sm font-medium text-slate-800 dark:text-slate-200">{project.nom}</p>
                 {project.dateLivraison && (
-                  <p className="text-xs text-slate-500 mt-0.5">Livraison : {project.dateLivraison}</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Livraison : {project.dateLivraison}</p>
                 )}
               </div>
               <span
@@ -179,7 +179,7 @@ export default function ClientDetailPage(): React.JSX.Element {
       </div>
 
       <div className="mt-6 flex items-center justify-between">
-        <h3 className="text-sm font-medium text-slate-700">Devis &amp; factures</h3>
+        <h3 className="text-sm font-medium text-slate-700 dark:text-slate-300">Devis &amp; factures</h3>
         <div className="flex gap-3">
           <Link
             to={`/facturation/devis/nouveau?clientId=${client.id}`}
@@ -195,9 +195,9 @@ export default function ClientDetailPage(): React.JSX.Element {
           </Link>
         </div>
       </div>
-      <div className="mt-3 bg-white rounded-xl border border-slate-200 divide-y divide-slate-100">
+      <div className="mt-3 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 divide-y divide-slate-100 dark:divide-slate-800">
         {documents.length === 0 ? (
-          <div className="p-4 text-sm text-slate-400">Aucun devis ou facture pour ce client.</div>
+          <div className="p-4 text-sm text-slate-400 dark:text-slate-500">Aucun devis ou facture pour ce client.</div>
         ) : (
           documents.map((doc) => {
             const totals = computeDocumentTotals(doc.lignes)
@@ -205,13 +205,13 @@ export default function ClientDetailPage(): React.JSX.Element {
               <Link
                 key={doc.id}
                 to={`/facturation/${doc.type === 'devis' ? 'devis' : 'factures'}/${doc.id}`}
-                className="flex items-center justify-between px-4 py-3 hover:bg-slate-50"
+                className="flex items-center justify-between px-4 py-3 hover:bg-slate-50 dark:hover:bg-slate-700/60"
               >
                 <div>
-                  <p className="text-sm font-medium text-slate-800">
+                  <p className="text-sm font-medium text-slate-800 dark:text-slate-200">
                     {doc.type === 'devis' ? 'Devis' : 'Facture'} {doc.numero}
                   </p>
-                  <p className="text-xs text-slate-500 mt-0.5">
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                     {doc.dateEmission} · {formatMontant(totals.totalTTC)}
                   </p>
                 </div>
@@ -231,9 +231,9 @@ export default function ClientDetailPage(): React.JSX.Element {
 
 function InfoCard({ label, value }: { label: string; value: string | null }): React.JSX.Element {
   return (
-    <div className="bg-white rounded-xl border border-slate-200 p-4">
-      <h3 className="text-xs font-medium text-slate-500 mb-1">{label}</h3>
-      <p className="text-sm text-slate-800">{value || '—'}</p>
+    <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-4">
+      <h3 className="text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">{label}</h3>
+      <p className="text-sm text-slate-800 dark:text-slate-200">{value || '—'}</p>
     </div>
   )
 }

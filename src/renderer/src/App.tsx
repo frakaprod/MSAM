@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react'
 import { Navigate, Route, Routes } from 'react-router-dom'
 import Sidebar from './components/Sidebar'
 import ClientsListPage from './pages/Clients/ClientsListPage'
@@ -14,6 +15,19 @@ import DocumentFormPage from './pages/Facturation/DocumentFormPage'
 import DocumentDetailPage from './pages/Facturation/DocumentDetailPage'
 import ProfilesListPage from './pages/Facturation/ProfilesListPage'
 import ProfileFormPage from './pages/Facturation/ProfileFormPage'
+import PaymentsListPage from './pages/Paiements/PaymentsListPage'
+import PreferencesPage from './pages/Preferences/PreferencesPage'
+
+function HomeRedirect(): React.JSX.Element | null {
+  const [target, setTarget] = useState<string | null>(null)
+
+  useEffect(() => {
+    window.api.preferences.get().then((p) => setTarget(p.pageDemarrage || '/agenda'))
+  }, [])
+
+  if (!target) return null
+  return <Navigate to={target} replace />
+}
 
 export default function App(): React.JSX.Element {
   return (
@@ -21,7 +35,7 @@ export default function App(): React.JSX.Element {
       <Sidebar />
       <main className="flex-1 overflow-y-auto print:overflow-visible">
         <Routes>
-          <Route path="/" element={<Navigate to="/agenda" replace />} />
+          <Route path="/" element={<HomeRedirect />} />
 
           <Route path="/clients" element={<ClientsListPage />} />
           <Route path="/clients/nouveau" element={<ClientFormPage />} />
@@ -54,6 +68,10 @@ export default function App(): React.JSX.Element {
           <Route path="/facturation/devis/:id/modifier" element={<DocumentFormPage type="devis" />} />
           <Route path="/facturation/profils/nouveau" element={<ProfileFormPage />} />
           <Route path="/facturation/profils/:id/modifier" element={<ProfileFormPage />} />
+
+          <Route path="/paiements" element={<PaymentsListPage />} />
+
+          <Route path="/preferences" element={<PreferencesPage />} />
         </Routes>
       </main>
     </div>

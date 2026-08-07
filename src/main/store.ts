@@ -12,7 +12,15 @@
 import { app } from 'electron'
 import { join } from 'path'
 import { existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from 'fs'
-import type { BillingProfile, Client, Event, InvoiceDocument, Project } from '../shared/types'
+import type {
+  BillingProfile,
+  Client,
+  Event,
+  InvoiceDocument,
+  Payment,
+  Preferences,
+  Project
+} from '../shared/types'
 
 export interface AppData {
   schemaVersion: number
@@ -21,6 +29,13 @@ export interface AppData {
   events: Event[]
   billingProfiles: BillingProfile[]
   documents: InvoiceDocument[]
+  payments: Payment[]
+  preferences: Preferences
+}
+
+const DEFAULT_PREFERENCES: Preferences = {
+  theme: 'clair',
+  pageDemarrage: '/agenda'
 }
 
 const DEFAULT_DATA: AppData = {
@@ -29,7 +44,9 @@ const DEFAULT_DATA: AppData = {
   projects: [],
   events: [],
   billingProfiles: [],
-  documents: []
+  documents: [],
+  payments: [],
+  preferences: { ...DEFAULT_PREFERENCES }
 }
 
 let cache: AppData | null = null
@@ -61,7 +78,9 @@ export function loadData(): AppData {
       projects: parsed.projects ?? [],
       events: parsed.events ?? [],
       billingProfiles: parsed.billingProfiles ?? [],
-      documents: parsed.documents ?? []
+      documents: parsed.documents ?? [],
+      payments: parsed.payments ?? [],
+      preferences: { ...DEFAULT_PREFERENCES, ...(parsed.preferences ?? {}) }
     }
   } catch (err) {
     // Fichier corrompu ou illisible : on ne perd pas les données existantes,
