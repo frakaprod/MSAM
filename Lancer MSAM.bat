@@ -30,9 +30,11 @@ if not exist node_modules (
 if not exist "node_modules\electron\dist\electron.exe" (
   echo.
   echo Le moteur de l'application ^(Electron^) n'a pas fini de se telecharger.
-  echo Nouvelle tentative...
+  echo Nouvelle tentative ^(ca peut prendre une minute ou deux^)...
   echo.
-  call npm install electron --no-save
+  call npm approve-scripts --all >nul 2>nul
+  if exist "node_modules\electron" rmdir /s /q "node_modules\electron"
+  call npm install
   if not exist "node_modules\electron\dist\electron.exe" (
     echo.
     echo ============================================================
