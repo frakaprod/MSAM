@@ -1,10 +1,67 @@
-import { BrowserWindow, dialog, ipcMain, shell } from 'electron'
+import { app, BrowserWindow, dialog, ipcMain, shell } from 'electron'
 import type { OpenDialogOptions } from 'electron'
 import { existsSync, mkdirSync } from 'fs'
 import { basename, join } from 'path'
 import { ensureExportFoldersOrError, getPreferences, updatePreferences } from '../preferencesRepository'
-import { migrateExportFolders } from '../exportMigration'
-import type { PreferencesUpdateInput } from '../../shared/types'
+import { deleteOldExportFolder, migrateExportFolders } from '../exportMigration'
+import type { Preferences, PreferencesUpdateInput } from '../../shared/types'
+
+export interface ApplyExportsFolderResult {
+  preferences: Preferences
+  error: string | null
+  migration: { movedCount: number; errors: string[] } | null
+  oldFolderDeleted: boolean
+}
+
+/** Dossier créé par défaut à l'installation (Documents\MSAM de Windows). */
+function defaultExportsFolder(): string {
+  return join(app.getPath('documents'), 'MSAM')
+}
+
+/**
+ * Bascule le dossier des documents générés vers `picked` : crée le nouveau
+ * dossier "MSAM" + ses 4 sous-dossiers, transfère automatiquement les
+ * documents déjà présents dans l'ancien dossier, puis supprime l'ancien
+ * dossier (devenu inutile) une fois le transfert entièrement réussi. Utilisée
+ * à la fois pour un dossier choisi manuellement et pour "revenir au dossier
+ * par défaut".
+ */
+function applyExportsFolder(picked: string): ApplyExportsFolderResult {
+  const previous = getPreferences().dossierExports
+  // Si le dossier choisi s'appelle déjà "MSAM" (l'utilisateur re-sélectionne
+  // un dossier MSAM existant), on l'utilise tel quel plutôt que d'imbriquer
+  // un second niveau "MSAM/MSAM".
+  const dossierExports = basename(picked).toLowerCase() === 'msam' ? picked : join(picked, 'MSAM')
+
+  const preferences = updatePreferences({ dossierExports })
+  const error = ensureExportFoldersOrError(dossierExports)
+
+  // Si l'utilisateur avait déjà des documents enregistrés dans l'ancien
+  // dossier, on les transfère automatiquement vers le nouveau : changer de
+  // dossier ne doit jamais "abandonner" des documents déjà générés.
+  let migration: { movedCount: number; errors: string[] } | null = null
+  let oldFolderDeleted = false
+  if (!error && previous && previous !== dossierExports) {
+    migration = migrateExportFolders(previous, dossierExports)
+    // L'ancien dossier MSAM n'a plus d'utilité une fois tout transféré : on
+    // le supprime, mais seulement si le transfert s'est fait sans la moindre
+    // erreur (sinon on risquerait de supprimer des documents pas encore
+    // déplacés).
+    if (migration.errors.length === 0) {
+      const deleteError = deleteOldExportFolder(previous, dossierExports)
+      oldFolderDeleted = !deleteError
+      if (deleteError) {
+        console.error(
+          "[MSAM] Impossible de supprimer l'ancien dossier des documents :",
+          previous,
+          deleteError
+        )
+      }
+    }
+  }
+
+  return { preferences, error, migration, oldFolderDeleted }
+}
 
 export function registerPreferencesIpc(): void {
   ipcMain.handle('preferences:get', () => {
@@ -13,6 +70,13 @@ export function registerPreferencesIpc(): void {
 
   ipcMain.handle('preferences:update', (_event, input: PreferencesUpdateInput) => {
     return updatePreferences(input)
+  })
+
+  // Chemin du dossier créé par défaut à l'installation (Documents\MSAM),
+  // affiché en info dans Préférences même si l'utilisateur a choisi un autre
+  // dossier depuis — pratique s'il veut savoir où il est ou y revenir.
+  ipcMain.handle('preferences:getDefaultExportsFolder', () => {
+    return defaultExportsFolder()
   })
 
   // Ouvre le sélecteur de dossier natif de Windows pour choisir où enregistrer
@@ -34,24 +98,14 @@ export function registerPreferencesIpc(): void {
     const result = win ? await dialog.showOpenDialog(win, options) : await dialog.showOpenDialog(options)
     if (result.canceled || result.filePaths.length === 0) return null
 
-    const picked = result.filePaths[0]
-    // Si le dossier choisi s'appelle déjà "MSAM" (l'utilisateur re-sélectionne
-    // un dossier MSAM existant), on l'utilise tel quel plutôt que d'imbriquer
-    // un second niveau "MSAM/MSAM".
-    const dossierExports = basename(picked).toLowerCase() === 'msam' ? picked : join(picked, 'MSAM')
+    return applyExportsFolder(result.filePaths[0])
+  })
 
-    const preferences = updatePreferences({ dossierExports })
-    const error = ensureExportFoldersOrError(dossierExports)
-
-    // Si l'utilisateur avait déjà des documents enregistrés dans l'ancien
-    // dossier, on les transfère automatiquement vers le nouveau : changer de
-    // dossier ne doit jamais "abandonner" des documents déjà générés.
-    let migration: { movedCount: number; errors: string[] } | null = null
-    if (!error && previous) {
-      migration = migrateExportFolders(previous, dossierExports)
-    }
-
-    return { preferences, error, migration }
+  // Revient (ou bascule) directement vers le dossier par défaut, sans passer
+  // par le sélecteur — même logique de transfert + suppression de l'ancien
+  // dossier que "chooseExportsFolder".
+  ipcMain.handle('preferences:useDefaultExportsFolder', () => {
+    return applyExportsFolder(defaultExportsFolder())
   })
 
   ipcMain.handle('preferences:openExportsFolder', () => {

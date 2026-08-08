@@ -27,9 +27,11 @@ export default function PreferencesPage(): React.JSX.Element {
   const [exportsError, setExportsError] = useState<string | null>(null)
   const [migrationInfo, setMigrationInfo] = useState<string | null>(null)
   const [migratingFolder, setMigratingFolder] = useState(false)
+  const [defaultExportsFolder, setDefaultExportsFolder] = useState<string | null>(null)
 
   useEffect(() => {
     window.api.preferences.get().then(setPreferences)
+    window.api.preferences.getDefaultExportsFolder().then(setDefaultExportsFolder)
     reloadDefaultProfile()
   }, [])
 
@@ -86,6 +88,51 @@ export default function PreferencesPage(): React.JSX.Element {
     }
   }
 
+  type ExportsFolderResult = {
+    preferences: Preferences
+    error: string | null
+    migration: { movedCount: number; errors: string[] } | null
+    oldFolderDeleted: boolean
+  }
+
+  function handleExportsFolderResult(result: ExportsFolderResult): void {
+    setPreferences(result.preferences)
+    if (result.error) {
+      setExportsError(
+        `Le dossier a été enregistré, mais MSAM n'a pas réussi à y créer les sous-dossiers : ${result.error}`
+      )
+      return
+    }
+    flashSaved()
+
+    // Les documents déjà enregistrés dans l'ancien dossier sont transférés
+    // automatiquement vers le nouveau (cf. migrateExportFolders côté main), et
+    // l'ancien dossier "MSAM" supprimé une fois vide de tout document (il n'a
+    // alors plus d'utilité) : changer de dossier ne doit jamais abandonner de
+    // documents ni laisser traîner un ancien dossier inutile.
+    if (result.migration) {
+      const { movedCount, errors } = result.migration
+      if (movedCount > 0 || errors.length > 0) {
+        const parts: string[] = []
+        if (movedCount > 0) {
+          parts.push(`${movedCount} document${movedCount > 1 ? 's' : ''} transféré${movedCount > 1 ? 's' : ''} depuis l'ancien dossier.`)
+        }
+        if (result.oldFolderDeleted) {
+          parts.push("Ancien dossier supprimé (plus d'utilité).")
+        }
+        if (errors.length > 0) {
+          parts.push(`${errors.length} fichier${errors.length > 1 ? 's' : ''} n'ont pas pu être transféré${errors.length > 1 ? 's' : ''} (${errors[0]}). L'ancien dossier a été conservé par précaution.`)
+        }
+        setMigrationInfo(parts.join(' '))
+      }
+    }
+
+    // Ouvre tout de suite le dossier dans l'Explorateur, pour vérifier
+    // immédiatement que "MSAM", ses 4 sous-dossiers et les documents
+    // transférés sont bien là.
+    window.api.preferences.openExportsFolder()
+  }
+
   async function handleChooseExportsFolder(): Promise<void> {
     setExportsError(null)
     setMigrationInfo(null)
@@ -93,36 +140,19 @@ export default function PreferencesPage(): React.JSX.Element {
     try {
       const result = await window.api.preferences.chooseExportsFolder()
       if (!result) return
-      setPreferences(result.preferences)
-      if (result.error) {
-        setExportsError(
-          `Le dossier a été enregistré, mais MSAM n'a pas réussi à y créer les sous-dossiers : ${result.error}`
-        )
-        return
-      }
-      flashSaved()
+      handleExportsFolderResult(result)
+    } finally {
+      setMigratingFolder(false)
+    }
+  }
 
-      // Les documents déjà enregistrés dans l'ancien dossier sont transférés
-      // automatiquement vers le nouveau (cf. migrateExportFolders côté main) :
-      // changer de dossier ne doit jamais abandonner des documents existants.
-      if (result.migration) {
-        const { movedCount, errors } = result.migration
-        if (movedCount > 0 || errors.length > 0) {
-          const parts: string[] = []
-          if (movedCount > 0) {
-            parts.push(`${movedCount} document${movedCount > 1 ? 's' : ''} transféré${movedCount > 1 ? 's' : ''} depuis l'ancien dossier.`)
-          }
-          if (errors.length > 0) {
-            parts.push(`${errors.length} fichier${errors.length > 1 ? 's' : ''} n'ont pas pu être transféré${errors.length > 1 ? 's' : ''} (${errors[0]}).`)
-          }
-          setMigrationInfo(parts.join(' '))
-        }
-      }
-
-      // Ouvre tout de suite le dossier dans l'Explorateur, pour vérifier
-      // immédiatement que "MSAM", ses 4 sous-dossiers et les documents
-      // transférés sont bien là.
-      window.api.preferences.openExportsFolder()
+  async function handleUseDefaultExportsFolder(): Promise<void> {
+    setExportsError(null)
+    setMigrationInfo(null)
+    setMigratingFolder(true)
+    try {
+      const result = await window.api.preferences.useDefaultExportsFolder()
+      handleExportsFolderResult(result)
     } finally {
       setMigratingFolder(false)
     }
@@ -293,6 +323,27 @@ export default function PreferencesPage(): React.JSX.Element {
           Factures émises, Factures fournisseurs, Devis, Relevés paiements. Il s'ouvre automatiquement
           dans l'Explorateur juste après le choix, pour vérifier que tout est bien créé.
         </p>
+
+        {defaultExportsFolder && (
+          <div className="mt-4 rounded-lg border border-slate-200 dark:border-slate-700 px-3 py-2">
+            <p className="text-xs text-slate-500 dark:text-slate-400">
+              Dossier par défaut (créé automatiquement à l'installation) :
+            </p>
+            <p className="mt-1 text-xs text-slate-600 dark:text-slate-300 font-mono break-all">
+              {defaultExportsFolder}
+            </p>
+            {preferences.dossierExports !== defaultExportsFolder && (
+              <button
+                type="button"
+                onClick={handleUseDefaultExportsFolder}
+                disabled={migratingFolder}
+                className="mt-2 text-xs font-medium text-brand-600 hover:text-brand-700 disabled:opacity-60"
+              >
+                Revenir à ce dossier par défaut
+              </button>
+            )}
+          </div>
+        )}
 
         {migrationInfo && (
           <div className="mt-3 rounded-lg bg-brand-50 dark:bg-brand-900/30 text-brand-700 dark:text-brand-300 text-xs px-3 py-2">

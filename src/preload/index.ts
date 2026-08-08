@@ -110,11 +110,20 @@ const api = {
     update: (input: PreferencesUpdateInput): Promise<Preferences> =>
       ipcRenderer.invoke('preferences:update', input),
     getSync: (): Preferences => ipcRenderer.sendSync('preferences:get-sync'),
+    getDefaultExportsFolder: (): Promise<string> =>
+      ipcRenderer.invoke('preferences:getDefaultExportsFolder'),
     chooseExportsFolder: (): Promise<{
       preferences: Preferences
       error: string | null
       migration: { movedCount: number; errors: string[] } | null
+      oldFolderDeleted: boolean
     } | null> => ipcRenderer.invoke('preferences:chooseExportsFolder'),
+    useDefaultExportsFolder: (): Promise<{
+      preferences: Preferences
+      error: string | null
+      migration: { movedCount: number; errors: string[] } | null
+      oldFolderDeleted: boolean
+    }> => ipcRenderer.invoke('preferences:useDefaultExportsFolder'),
     openExportsFolder: (): Promise<boolean> =>
       ipcRenderer.invoke('preferences:openExportsFolder')
   },

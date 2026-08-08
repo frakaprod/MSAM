@@ -1,5 +1,5 @@
-import { copyFileSync, existsSync, mkdirSync, readdirSync, renameSync, statSync, unlinkSync } from 'fs'
-import { join } from 'path'
+import { copyFileSync, existsSync, mkdirSync, readdirSync, renameSync, rmSync, statSync, unlinkSync } from 'fs'
+import { basename, join, sep } from 'path'
 import { EXPORT_SUBFOLDERS } from '../shared/exportFolders'
 
 export interface MigrationResult {
@@ -73,6 +73,33 @@ export function migrateExportFolders(oldBaseDir: string, newBaseDir: string): Mi
   }
 
   return result
+}
+
+/**
+ * Supprime l'ancien dossier MSAM une fois que tous ses documents ont été
+ * transférés vers le nouveau (migrateExportFolders) : il n'a alors plus
+ * aucune utilité, et le laisser traîner ne ferait que semer la confusion
+ * ("où sont mes vrais documents ?"). Ne s'appelle qu'après une migration
+ * réussie SANS erreur, pour ne jamais risquer de supprimer des documents pas
+ * encore transférés.
+ *
+ * Garde-fous : on ne supprime que si le dossier s'appelle bien "MSAM" (on ne
+ * supprime jamais un dossier quelconque choisi par l'utilisateur), et jamais
+ * si le nouveau dossier se trouve À L'INTÉRIEUR de l'ancien (auquel cas on
+ * supprimerait le nouveau dossier avec).
+ */
+export function deleteOldExportFolder(oldBaseDir: string, newBaseDir: string): string | null {
+  if (!oldBaseDir || oldBaseDir === newBaseDir) return null
+  if (basename(oldBaseDir).toLowerCase() !== 'msam') return null
+  if (newBaseDir.startsWith(oldBaseDir + sep)) return null
+  if (!existsSync(oldBaseDir)) return null
+
+  try {
+    rmSync(oldBaseDir, { recursive: true, force: true })
+    return null
+  } catch (err) {
+    return errorMessage(err)
+  }
 }
 
 function errorMessage(err: unknown): string {

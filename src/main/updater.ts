@@ -1,117 +1,74 @@
-// Mise à jour automatique de MSAM via Git : au lancement, on compare le
-// commit local au commit le plus récent du dépôt GitHub public
-// (github.com/frakaprod/msam, branche "main"). S'ils diffèrent, on propose
-// à l'utilisateur de mettre à jour ; s'il accepte, on récupère le nouveau
-// code, on réinstalle les dépendances si besoin, on reconstruit l'appli et
-// on la relance automatiquement.
+// Mise à jour automatique de MSAM via les Releases GitHub (dépôt public
+// github.com/frakaprod/msam). À chaque lancement, electron-updater compare la
+// version installée à la dernière Release publiée ; si une nouvelle version
+// existe, on propose à l'utilisateur de l'installer (téléchargement +
+// installation silencieuse + redémarrage automatique).
 //
-// Ne s'active que si le dossier de l'appli est un vrai dépôt Git (donc pas
-// pour une installation encore faite à partir d'un simple zip) et que Git
-// est disponible sur la machine — sinon, silencieux (juste loggé), pour ne
-// jamais bloquer un lancement normal.
+// Le dépôt étant public, aucune authentification n'est nécessaire côté
+// utilisateur : c'est un simple téléchargement, comme visiter une page web.
+// Ne s'active que sur une version installée (via l'exécutable NSIS) — jamais
+// en développement.
 
 import { app, BrowserWindow, dialog } from 'electron'
-import { execFile } from 'child_process'
+import { autoUpdater } from 'electron-updater'
 
-const GIT_REMOTE_URL = 'https://github.com/frakaprod/msam.git'
-const GIT_BRANCH = 'main'
-
-// NB : toute erreur de mise à jour est loguée via console.error, visible
-// dans la fenêtre noire ouverte par "Lancer MSAM.bat".
-
-function run(cmd: string, args: string[], cwd: string, timeoutMs: number): Promise<string> {
-  return new Promise((resolve, reject) => {
-    execFile(
-      cmd,
-      args,
-      { cwd, timeout: timeoutMs, windowsHide: true, maxBuffer: 1024 * 1024 * 50, shell: true },
-      (err, stdout, stderr) => {
-        if (err) {
-          reject(new Error(`${cmd} ${args.join(' ')} : ${stderr || err.message}`))
-          return
-        }
-        resolve(stdout)
-      }
-    )
-  })
-}
-
-async function isGitRepo(dir: string): Promise<boolean> {
-  try {
-    await run('git', ['rev-parse', '--is-inside-work-tree'], dir, 10_000)
-    return true
-  } catch {
-    return false
-  }
-}
+let checking = false
 
 /**
  * Point d'entrée appelé au démarrage. Ne fait jamais planter/bloquer le
- * lancement de l'appli : toute erreur (pas de Git, pas de réseau, dépôt pas
- * encore migré...) est simplement loggée et on continue normalement.
+ * lancement de l'appli : toute erreur (pas de réseau, dépôt inaccessible...)
+ * est simplement loguée et on continue normalement.
  */
-export async function checkForUpdates(): Promise<void> {
-  const appPath = app.getAppPath()
+export function checkForUpdates(): void {
+  if (checking) return
+  checking = true
 
-  if (!(await isGitRepo(appPath))) {
-    console.log('[MSAM] Dossier pas encore lié à Git, mise à jour automatique ignorée.')
+  // electron-updater ne fonctionne que sur une version "packagée" (installée
+  // via le setup.exe, avec app-update.yml généré par electron-builder) — pas
+  // en dev.
+  if (!app.isPackaged) {
+    console.log('[MSAM] Mise à jour automatique ignorée (appli non installée).')
     return
   }
 
-  try {
-    await run('git', ['remote', 'set-url', 'origin', GIT_REMOTE_URL], appPath, 10_000).catch(() => {})
-    await run('git', ['fetch', 'origin', GIT_BRANCH, '--quiet'], appPath, 30_000)
-  } catch (err) {
+  autoUpdater.autoDownload = false
+  autoUpdater.autoInstallOnAppQuit = false
+
+  autoUpdater.on('error', (err) => {
     console.error('[MSAM] Vérification des mises à jour impossible (pas de connexion ?) :', err)
-    return
-  }
-
-  let local: string
-  let remote: string
-  try {
-    local = (await run('git', ['rev-parse', 'HEAD'], appPath, 10_000)).trim()
-    remote = (await run('git', ['rev-parse', `origin/${GIT_BRANCH}`], appPath, 10_000)).trim()
-  } catch (err) {
-    console.error('[MSAM] Impossible de comparer les versions :', err)
-    return
-  }
-
-  if (local === remote) {
-    console.log('[MSAM] Déjà à jour.')
-    return
-  }
-
-  // Ne propose une mise à jour que si origin/main est réellement en avance
-  // sur le commit local (fast-forward possible) — pas si le local a divergé
-  // ou est lui-même en avance (ex : pendant le développement de MSAM), pour
-  // ne jamais proposer un "reset" qui ferait perdre des commits locaux.
-  try {
-    await run('git', ['merge-base', '--is-ancestor', 'HEAD', `origin/${GIT_BRANCH}`], appPath, 10_000)
-  } catch {
-    console.log('[MSAM] Version locale différente mais pas "en retard" sur origin/main, on ignore.')
-    return
-  }
-
-  const choice = await dialog.showMessageBox({
-    type: 'info',
-    title: 'MSAM',
-    message: 'Une mise à jour est disponible',
-    detail: 'Allez. Dépêches toi de la faire !',
-    buttons: ['Mettre à jour', 'Plus tard'],
-    defaultId: 0,
-    cancelId: 1,
-    noLink: true
   })
 
-  if (choice.response !== 0) {
-    console.log('[MSAM] Mise à jour reportée par l\'utilisateur.')
-    return
-  }
+  autoUpdater.on('update-not-available', () => {
+    console.log('[MSAM] Déjà à jour.')
+  })
 
-  await applyUpdate(appPath)
+  autoUpdater.on('update-available', async (info) => {
+    console.log('[MSAM] Mise à jour disponible :', info.version)
+    const choice = await dialog.showMessageBox({
+      type: 'info',
+      title: 'MSAM',
+      message: 'Une mise à jour est disponible',
+      detail: 'Allez. Dépêches toi de la faire !',
+      buttons: ['Mettre à jour', 'Plus tard'],
+      defaultId: 0,
+      cancelId: 1,
+      noLink: true
+    })
+
+    if (choice.response !== 0) {
+      console.log("[MSAM] Mise à jour reportée par l'utilisateur.")
+      return
+    }
+
+    await applyUpdate()
+  })
+
+  autoUpdater.checkForUpdates().catch((err) => {
+    console.error('[MSAM] Vérification des mises à jour impossible :', err)
+  })
 }
 
-async function applyUpdate(appPath: string): Promise<void> {
+async function applyUpdate(): Promise<void> {
   const updateWin = new BrowserWindow({
     width: 420,
     height: 220,
@@ -130,28 +87,33 @@ async function applyUpdate(appPath: string): Promise<void> {
       .catch(() => {})
   }
 
-  try {
-    await setStatus('Téléchargement de la mise à jour...')
-    // reset --hard plutôt que pull : le dossier de l'appli ne doit jamais
-    // avoir de modifications locales (les données utilisateur vivent
-    // ailleurs, dans AppData), donc pas de fusion à gérer, juste aligner sur
-    // la dernière version publiée.
-    await run('git', ['fetch', 'origin', GIT_BRANCH, '--quiet'], appPath, 30_000)
-    await run('git', ['reset', '--hard', `origin/${GIT_BRANCH}`], appPath, 30_000)
+  await setStatus('Téléchargement de la mise à jour...')
 
-    await setStatus('Installation des dépendances...')
-    await run('npm', ['install'], appPath, 10 * 60_000)
+  autoUpdater.on('download-progress', (progress) => {
+    setStatus(`Téléchargement de la mise à jour... ${Math.round(progress.percent)}%`)
+  })
 
-    await setStatus("Construction de l'application...")
-    await run('npm', ['run', 'build'], appPath, 5 * 60_000)
-
-    await setStatus('Redémarrage de MSAM...')
-    setTimeout(() => {
-      app.relaunch()
-      app.exit(0)
-    }, 600)
-  } catch (err) {
+  autoUpdater.on('error', (err) => {
     console.error('[MSAM] Échec de la mise à jour :', err)
+    setStatus('Échec de la mise à jour. Vérifie ta connexion et relance MSAM.')
+    setTimeout(() => {
+      if (!updateWin.isDestroyed()) updateWin.close()
+    }, 5000)
+  })
+
+  autoUpdater.on('update-downloaded', () => {
+    setStatus('Redémarrage de MSAM...')
+    setTimeout(() => {
+      // isSilent : installation sans fenêtre NSIS visible ;
+      // isForceRunAfter : relance MSAM automatiquement une fois installé.
+      autoUpdater.quitAndInstall(true, true)
+    }, 600)
+  })
+
+  try {
+    await autoUpdater.downloadUpdate()
+  } catch (err) {
+    console.error('[MSAM] Échec du téléchargement de la mise à jour :', err)
     await setStatus('Échec de la mise à jour. Vérifie ta connexion et relance MSAM.')
     setTimeout(() => {
       if (!updateWin.isDestroyed()) updateWin.close()

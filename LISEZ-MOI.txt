@@ -2,35 +2,33 @@ MSAM — Ma Secrétaire à Moi
 ===========================
 
 INSTALLATION (une seule fois) :
-1. Si ce n'est pas déjà fait, installe Node.js : https://nodejs.org (bouton "LTS")
-   - Installateur classique, "suivant, suivant, terminer".
-2. Installe aussi Git (nécessaire pour les mises à jour automatiques) :
-   https://git-scm.com/download/win — installateur classique aussi.
-3. Double-clique sur "Lancer MSAM.bat"
-   - La première fois, ça va télécharger et préparer l'application (quelques minutes, une fenêtre noire va défiler du texte, c'est normal).
-   - Une fenêtre MSAM va s'ouvrir automatiquement à la fin.
+1. Double-clique sur le fichier "MSAM Setup x.x.x.exe" fourni.
+2. Suis les étapes ("suivant, suivant, terminer"). Aucun logiciel à installer
+   à côté (pas besoin de Node.js, ni de Git, ni de compte quelconque).
+3. MSAM se lance automatiquement à la fin de l'installation. Un raccourci
+   est aussi créé sur le Bureau et dans le menu Démarrer pour les fois
+   suivantes.
 
-DÉJÀ INSTALLÉ AVANT LE SYSTÈME DE MISE À JOUR AUTOMATIQUE ?
-- Lance une seule fois "Basculer MSAM sur Git.bat" (livré à côté de ce fichier).
-  Il relie ton installation à GitHub pour les mises à jour automatiques, sans
-  toucher à tes données. L'ancien dossier est gardé en sauvegarde à côté.
-
-UTILISATION AU QUOTIDIEN :
-- Double-clique sur "Lancer MSAM.bat" à chaque fois que tu veux ouvrir MSAM.
-- Les fois suivantes, ça s'ouvre en quelques secondes.
-- À chaque lancement, MSAM vérifie automatiquement s'il y a une nouvelle
-  version et te propose de l'installer (un clic, l'appli redémarre toute
-  seule une fois à jour).
+MISES À JOUR :
+- Entièrement automatiques : à chaque lancement, MSAM vérifie s'il existe une
+  nouvelle version et te propose de l'installer d'un clic (l'appli se
+  redémarre toute seule une fois à jour).
+- Rien à faire de ton côté, pas de fichier à retélécharger.
 
 TES DONNÉES :
 - Tout est stocké en local sur ton PC, dans :
-  C:\Users\<ton-nom-utilisateur>\AppData\Roaming\msam\msam-data.json
-- Rien n'est envoyé sur internet. Pense à sauvegarder ce fichier de temps en temps
-  (copier-coller dans un dossier de sauvegarde) si tu veux être tranquille.
+  C:\Users\<ton-nom-utilisateur>\AppData\Roaming\MSAM\msam-data.json
+- Rien n'est envoyé sur internet. Pense à sauvegarder ce fichier de temps en
+  temps (copier-coller dans un dossier de sauvegarde) si tu veux être
+  tranquille.
 
 TES DOCUMENTS GÉNÉRÉS (factures, devis, relevés) :
-- Enregistrés automatiquement dans le dossier "MSAM" de tes Documents Windows
-  (modifiable dans Préférences), avec un sous-dossier par type de document.
+- Enregistrés automatiquement dans le dossier "MSAM" de tes Documents
+  Windows, avec un sous-dossier par type de document.
+- Modifiable dans Préférences à tout moment : les documents déjà enregistrés
+  sont alors transférés automatiquement vers le nouveau dossier, et l'ancien
+  est supprimé (il n'a plus d'utilité une fois vide). Le chemin du dossier
+  par défaut reste toujours visible dans Préférences si besoin d'y revenir.
 
 CE QUI EST DISPONIBLE AUJOURD'HUI :
 - Base clients, Agenda, Projets
