@@ -31,14 +31,23 @@ export async function generateAndSavePdf(
   const preferences = getPreferences()
   const baseDir = preferences.dossierExports as string
   const dir = join(baseDir, subfolder)
-  if (!existsSync(dir)) {
-    mkdirSync(dir, { recursive: true })
+
+  try {
+    if (!existsSync(dir)) {
+      mkdirSync(dir, { recursive: true })
+    }
+
+    const safeName = filename.replace(/[\\/:*?"<>|]/g, '-')
+    const base = safeName.replace(/\.pdf$/i, '')
+    const target = join(dir, `${base}.pdf`)
+
+    writeFileSync(target, buffer)
+    return target
+  } catch (err) {
+    // Loggé dans la fenêtre noire ouverte par "Lancer MSAM.bat" pour pouvoir
+    // diagnostiquer un souci de droits d'accès / chemin invalide / disque
+    // indisponible si l'enregistrement échoue côté utilisateur.
+    console.error('[MSAM] Échec de l\'enregistrement du PDF dans', dir, err)
+    throw err
   }
-
-  const safeName = filename.replace(/[\\/:*?"<>|]/g, '-')
-  const base = safeName.replace(/\.pdf$/i, '')
-  const target = join(dir, `${base}.pdf`)
-
-  writeFileSync(target, buffer)
-  return target
 }

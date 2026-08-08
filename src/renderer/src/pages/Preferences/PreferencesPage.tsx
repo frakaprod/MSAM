@@ -24,6 +24,7 @@ export default function PreferencesPage(): React.JSX.Element {
   const [profileLoading, setProfileLoading] = useState(true)
   const [saved, setSaved] = useState(false)
   const [logoError, setLogoError] = useState<string | null>(null)
+  const [exportsError, setExportsError] = useState<string | null>(null)
 
   useEffect(() => {
     window.api.preferences.get().then(setPreferences)
@@ -84,11 +85,20 @@ export default function PreferencesPage(): React.JSX.Element {
   }
 
   async function handleChooseExportsFolder(): Promise<void> {
-    const updated = await window.api.preferences.chooseExportsFolder()
-    if (updated) {
-      setPreferences(updated)
-      flashSaved()
+    setExportsError(null)
+    const result = await window.api.preferences.chooseExportsFolder()
+    if (!result) return
+    setPreferences(result.preferences)
+    if (result.error) {
+      setExportsError(
+        `Le dossier a été enregistré, mais MSAM n'a pas réussi à y créer les sous-dossiers : ${result.error}`
+      )
+      return
     }
+    flashSaved()
+    // Ouvre tout de suite le dossier dans l'Explorateur, pour vérifier
+    // immédiatement que "MSAM" et ses 4 sous-dossiers ont bien été créés.
+    window.api.preferences.openExportsFolder()
   }
 
   if (!preferences) {
@@ -250,8 +260,15 @@ export default function PreferencesPage(): React.JSX.Element {
         <p className="mt-3 text-xs text-slate-400 dark:text-slate-500">
           Le dossier choisi contiendra un sous-dossier "MSAM" dédié (pour ne rien mélanger avec
           d'éventuels autres fichiers déjà présents dedans), lui-même divisé en 4 sous-dossiers :
-          Factures émises, Factures fournisseurs, Devis, Relevés paiements.
+          Factures émises, Factures fournisseurs, Devis, Relevés paiements. Il s'ouvre automatiquement
+          dans l'Explorateur juste après le choix, pour vérifier que tout est bien créé.
         </p>
+
+        {exportsError && (
+          <div className="mt-3 rounded-lg bg-red-50 dark:bg-red-950/40 text-red-700 text-xs px-3 py-2">
+            {exportsError}
+          </div>
+        )}
       </section>
 
       <p className="mt-4 text-xs text-slate-400 dark:text-slate-500">

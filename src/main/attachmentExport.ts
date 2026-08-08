@@ -13,15 +13,21 @@ export function saveDataUrlFile(subfolder: string, filename: string, dataUrl: st
   const preferences = getPreferences()
   const baseDir = preferences.dossierExports as string
   const dir = join(baseDir, subfolder)
-  if (!existsSync(dir)) {
-    mkdirSync(dir, { recursive: true })
+
+  try {
+    if (!existsSync(dir)) {
+      mkdirSync(dir, { recursive: true })
+    }
+
+    const safeName = filename.replace(/[\\/:*?"<>|]/g, '-')
+    const target = join(dir, safeName)
+
+    const match = dataUrl.match(/^data:[^;]+;base64,(.*)$/)
+    if (!match) throw new Error('Format de fichier invalide')
+    writeFileSync(target, Buffer.from(match[1], 'base64'))
+    return target
+  } catch (err) {
+    console.error("[MSAM] Échec de l'enregistrement de la pièce jointe dans", dir, err)
+    throw err
   }
-
-  const safeName = filename.replace(/[\\/:*?"<>|]/g, '-')
-  const target = join(dir, safeName)
-
-  const match = dataUrl.match(/^data:[^;]+;base64,(.*)$/)
-  if (!match) throw new Error('Format de fichier invalide')
-  writeFileSync(target, Buffer.from(match[1], 'base64'))
-  return target
 }

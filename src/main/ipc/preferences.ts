@@ -1,8 +1,8 @@
 import { BrowserWindow, dialog, ipcMain, shell } from 'electron'
 import type { OpenDialogOptions } from 'electron'
 import { existsSync, mkdirSync } from 'fs'
-import { join } from 'path'
-import { getPreferences, updatePreferences } from '../preferencesRepository'
+import { basename, join } from 'path'
+import { ensureExportFoldersOrError, getPreferences, updatePreferences } from '../preferencesRepository'
 import type { PreferencesUpdateInput } from '../../shared/types'
 
 export function registerPreferencesIpc(): void {
@@ -15,23 +15,33 @@ export function registerPreferencesIpc(): void {
   })
 
   // Ouvre le sélecteur de dossier natif de Windows pour choisir où enregistrer
-  // les PDF générés (factures/devis/relevés). Retourne null si annulé.
+  // les documents générés (factures/devis/relevés). Retourne null si annulé,
+  // sinon les préférences à jour + un message d'erreur si la création des
+  // sous-dossiers a échoué (droits d'accès, chemin invalide...) — jamais une
+  // promesse rejetée en silence côté renderer.
   ipcMain.handle('preferences:chooseExportsFolder', async (event) => {
     const win = BrowserWindow.fromWebContents(event.sender)
     const current = getPreferences().dossierExports
     const options: OpenDialogOptions = {
       title: 'Choisir le dossier des documents générés',
       defaultPath: current ?? undefined,
-      properties: ['openDirectory', 'createDirectory']
+      // 'createDirectory' (création de dossier depuis la boîte de dialogue)
+      // n'existe que sur macOS ; son équivalent Windows/Linux est
+      // 'promptToCreate'. On met les deux pour couvrir toutes les plateformes.
+      properties: ['openDirectory', 'createDirectory', 'promptToCreate']
     }
     const result = win ? await dialog.showOpenDialog(win, options) : await dialog.showOpenDialog(options)
     if (result.canceled || result.filePaths.length === 0) return null
-    // Le dossier choisi devient le parent : MSAM range toujours ses
-    // documents dans un sous-dossier "MSAM" dédié à l'intérieur, pour ne
-    // jamais mélanger avec d'autres fichiers déjà présents dans le dossier
-    // sélectionné par l'utilisateur.
-    const dossierExports = join(result.filePaths[0], 'MSAM')
-    return updatePreferences({ dossierExports })
+
+    const picked = result.filePaths[0]
+    // Si le dossier choisi s'appelle déjà "MSAM" (l'utilisateur re-sélectionne
+    // un dossier MSAM existant), on l'utilise tel quel plutôt que d'imbriquer
+    // un second niveau "MSAM/MSAM".
+    const dossierExports = basename(picked).toLowerCase() === 'msam' ? picked : join(picked, 'MSAM')
+
+    const preferences = updatePreferences({ dossierExports })
+    const error = ensureExportFoldersOrError(dossierExports)
+    return { preferences, error }
   })
 
   ipcMain.handle('preferences:openExportsFolder', () => {
