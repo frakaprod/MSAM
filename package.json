@@ -13,7 +13,7 @@
     "dist:linux": "npm run build && electron-builder --linux dir",
     "dist:mac": "npm run build && electron-builder --mac",
     "dist:win": "npm run build && electron-builder --win",
-    "publish:win": "npm run build && electron-builder --win --publish always",
+    "package:win": "npm run build && electron-builder --win nsis",
     "typecheck": "tsc --noEmit -p tsconfig.node.json && tsc --noEmit -p tsconfig.web.json"
   },
   "devDependencies": {
@@ -49,9 +49,9 @@
       "out/**/*"
     ],
     "publish": {
-      "provider": "github",
-      "owner": "frakaprod",
-      "repo": "msam"
+      "provider": "generic",
+      "url": "https://raw.githubusercontent.com/frakaprod/msam/releases/updates",
+      "channel": "latest"
     },
     "linux": {
       "target": [
