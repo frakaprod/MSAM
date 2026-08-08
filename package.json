@@ -50,8 +50,9 @@
     ],
     "publish": {
       "provider": "generic",
-      "url": "https://raw.githubusercontent.com/frakaprod/msam/releases/updates",
-      "channel": "latest"
+      "url": "https://frakaprod.github.io/msam/updates",
+      "channel": "latest",
+      "useMultipleRangeRequest": true
     },
     "linux": {
       "target": [
