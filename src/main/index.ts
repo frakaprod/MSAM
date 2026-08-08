@@ -11,6 +11,7 @@ import { registerPaymentsIpc } from './ipc/payments'
 import { registerPreferencesIpc } from './ipc/preferences'
 import { registerPdfIpc } from './ipc/pdf'
 import { registerAttachmentsIpc } from './ipc/attachments'
+import { registerAppIpc } from './ipc/app'
 import { checkForUpdates } from './updater'
 import { normalizeExportFolder } from './preferencesRepository'
 import { persist } from './store'
@@ -66,6 +67,7 @@ app.whenReady().then(() => {
   registerPreferencesIpc()
   registerPdfIpc()
   registerAttachmentsIpc()
+  registerAppIpc()
 
   // Corrige une fois pour toutes un ancien dossier de documents qui ne
   // respecterait pas la règle "toujours dans un sous-dossier MSAM dédié"

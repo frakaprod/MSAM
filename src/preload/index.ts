@@ -136,6 +136,9 @@ const api = {
   attachments: {
     save: (input: { subfolder: string; filename: string; dataUrl: string }): Promise<{ path: string }> =>
       ipcRenderer.invoke('attachments:save', input)
+  },
+  app: {
+    getVersion: (): Promise<string> => ipcRenderer.invoke('app:getVersion')
   }
 }
 

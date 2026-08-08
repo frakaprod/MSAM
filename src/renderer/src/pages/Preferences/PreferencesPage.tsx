@@ -28,10 +28,12 @@ export default function PreferencesPage(): React.JSX.Element {
   const [migrationInfo, setMigrationInfo] = useState<string | null>(null)
   const [migratingFolder, setMigratingFolder] = useState(false)
   const [defaultExportsFolder, setDefaultExportsFolder] = useState<string | null>(null)
+  const [version, setVersion] = useState<string | null>(null)
 
   useEffect(() => {
     window.api.preferences.get().then(setPreferences)
     window.api.preferences.getDefaultExportsFolder().then(setDefaultExportsFolder)
+    window.api.app.getVersion().then(setVersion)
     reloadDefaultProfile()
   }, [])
 
@@ -173,7 +175,19 @@ export default function PreferencesPage(): React.JSX.Element {
         )}
       </div>
 
-      <section className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-6">
+      <section className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-6 flex items-center justify-between">
+        <div>
+          <h3 className="text-sm font-medium text-slate-800 dark:text-slate-200">MSAM</h3>
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+            Les mises à jour sont vérifiées automatiquement au démarrage.
+          </p>
+        </div>
+        <span className="text-xs font-mono rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 px-3 py-1.5 text-slate-600 dark:text-slate-300">
+          {version ? `Version ${version}` : 'Version...'}
+        </span>
+      </section>
+
+      <section className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-6 mt-4">
         <h3 className="text-sm font-medium text-slate-800 dark:text-slate-200">Thème</h3>
         <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
           L'apparence de l'appli. Les documents imprimés/exportés en PDF restent toujours clairs.
