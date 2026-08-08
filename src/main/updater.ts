@@ -16,6 +16,9 @@ import { execFile } from 'child_process'
 const GIT_REMOTE_URL = 'https://github.com/frakaprod/msam.git'
 const GIT_BRANCH = 'main'
 
+// NB : toute erreur de mise à jour est loguée via console.error, visible
+// dans la fenêtre noire ouverte par "Lancer MSAM.bat".
+
 function run(cmd: string, args: string[], cwd: string, timeoutMs: number): Promise<string> {
   return new Promise((resolve, reject) => {
     execFile(
