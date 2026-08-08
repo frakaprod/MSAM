@@ -325,7 +325,7 @@ export default function DocumentFormPage({ type }: { type: DocumentType }): Reac
                         type="number"
                         min={0}
                         step="0.5"
-                        value={ligne.quantite}
+                        value={ligne.quantite || ''}
                         onChange={(e) => updateLigne(ligne.id, { quantite: Number(e.target.value) })}
                         className="w-full border-0 focus:ring-0 text-sm p-0"
                       />
@@ -335,7 +335,7 @@ export default function DocumentFormPage({ type }: { type: DocumentType }): Reac
                         type="number"
                         min={0}
                         step="0.01"
-                        value={ligne.prixUnitaireHT}
+                        value={ligne.prixUnitaireHT || ''}
                         onChange={(e) => updateLigne(ligne.id, { prixUnitaireHT: Number(e.target.value) })}
                         className="w-full border-0 focus:ring-0 text-sm p-0"
                       />
