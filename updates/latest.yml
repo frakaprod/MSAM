@@ -1,8 +1,8 @@
-version: 1.0.3
+version: 1.0.4
 files:
-  - url: MSAM Setup 1.0.3.exe
-    sha512: nM8ZEv+KJYooI7muJlg/54TjQKu0LmsfVzMlxjnoDt2uLM78hux/e2HXJANz/SE2dlqcopV5yzYq9UgZ6YMSPQ==
-    size: 99524169
-path: MSAM Setup 1.0.3.exe
-sha512: nM8ZEv+KJYooI7muJlg/54TjQKu0LmsfVzMlxjnoDt2uLM78hux/e2HXJANz/SE2dlqcopV5yzYq9UgZ6YMSPQ==
-releaseDate: '2026-08-08T10:30:50.314Z'
+  - url: MSAM Setup 1.0.4.exe
+    sha512: ccoun0OJkkq8m5iM7L+DOiY8ZQatMN6ivUqtDlb06eAoN4IKi+cqrZTSNHqto+d457RVaASDskG9eSRcCOEcng==
+    size: 99524262
+path: MSAM Setup 1.0.4.exe
+sha512: ccoun0OJkkq8m5iM7L+DOiY8ZQatMN6ivUqtDlb06eAoN4IKi+cqrZTSNHqto+d457RVaASDskG9eSRcCOEcng==
+releaseDate: '2026-08-08T10:40:05.971Z'
