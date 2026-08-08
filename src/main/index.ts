@@ -12,6 +12,7 @@ import { registerPreferencesIpc } from './ipc/preferences'
 import { registerPdfIpc } from './ipc/pdf'
 import { registerAttachmentsIpc } from './ipc/attachments'
 import { checkForUpdates } from './updater'
+import { normalizeExportFolder } from './preferencesRepository'
 import { persist } from './store'
 
 function createWindow(): void {
@@ -58,6 +59,12 @@ app.whenReady().then(() => {
   registerPreferencesIpc()
   registerPdfIpc()
   registerAttachmentsIpc()
+
+  // Corrige une fois pour toutes un ancien dossier de documents qui ne
+  // respecterait pas la règle "toujours dans un sous-dossier MSAM dédié"
+  // (réglage hérité d'une version antérieure de l'appli) — avant l'ouverture
+  // de la fenêtre, pour que Préférences affiche déjà le bon chemin.
+  normalizeExportFolder()
 
   createWindow()
 

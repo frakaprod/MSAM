@@ -1,6 +1,6 @@
 {
   "name": "msam",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "MSAM - Ma Secrétaire à Moi : gestion de planning, facturation, agenda et clients pour freelance",
   "main": "./out/main/index.js",
   "author": "François",
