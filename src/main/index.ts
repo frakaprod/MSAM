@@ -15,8 +15,10 @@ import { checkForUpdates } from './updater'
 import { normalizeExportFolder } from './preferencesRepository'
 import { persist } from './store'
 
+let mainWindow: BrowserWindow | null = null
+
 function createWindow(): void {
-  const mainWindow = new BrowserWindow({
+  const win = new BrowserWindow({
     width: 1280,
     height: 800,
     minWidth: 960,
@@ -31,20 +33,25 @@ function createWindow(): void {
       nodeIntegration: false
     }
   })
+  mainWindow = win
 
-  mainWindow.on('ready-to-show', () => {
-    mainWindow.show()
+  win.on('ready-to-show', () => {
+    win.show()
   })
 
-  mainWindow.webContents.setWindowOpenHandler((details) => {
+  win.on('closed', () => {
+    if (mainWindow === win) mainWindow = null
+  })
+
+  win.webContents.setWindowOpenHandler((details) => {
     shell.openExternal(details.url)
     return { action: 'deny' }
   })
 
   if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
-    mainWindow.loadURL(process.env['ELECTRON_RENDERER_URL'])
+    win.loadURL(process.env['ELECTRON_RENDERER_URL'])
   } else {
-    mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
+    win.loadFile(join(__dirname, '../renderer/index.html'))
   }
 }
 
@@ -76,7 +83,7 @@ app.whenReady().then(() => {
   // l'ouverture de la fenêtre principale (cf. updater.ts pour le détail).
   // Pas en mode dev (electron-vite dev), pour ne pas gêner le développement.
   if (!is.dev) {
-    checkForUpdates()
+    checkForUpdates(mainWindow)
   }
 })
 
