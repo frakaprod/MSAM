@@ -11,6 +11,7 @@ import { registerPaymentsIpc } from './ipc/payments'
 import { registerPreferencesIpc } from './ipc/preferences'
 import { registerPdfIpc } from './ipc/pdf'
 import { registerAttachmentsIpc } from './ipc/attachments'
+import { checkForUpdates } from './updater'
 import { persist } from './store'
 
 function createWindow(): void {
@@ -63,6 +64,13 @@ app.whenReady().then(() => {
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
   })
+
+  // Vérification des mises à jour en tâche de fond : ne bloque jamais
+  // l'ouverture de la fenêtre principale (cf. updater.ts pour le détail).
+  // Pas en mode dev (electron-vite dev), pour ne pas gêner le développement.
+  if (!is.dev) {
+    checkForUpdates()
+  }
 })
 
 app.on('window-all-closed', () => {
