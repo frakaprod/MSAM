@@ -1,4 +1,10 @@
-import type { DocumentStatut, EventCategorie, EventStatut, ProjectStatut } from '../../../shared/types'
+import type {
+  DocumentStatut,
+  EventCategorie,
+  EventStatut,
+  ProjectStatut,
+  SupplierInvoiceStatut
+} from '../../../shared/types'
 
 export const CATEGORIE_LABELS: Record<EventCategorie, string> = {
   rdv_client: 'RDV client',
@@ -81,6 +87,16 @@ export const DOCUMENT_STATUT_STYLES: Record<DocumentStatut, string> = {
   paye: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300',
   en_retard: 'bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300',
   annule: 'bg-slate-200 text-slate-500 line-through dark:bg-slate-700 dark:text-slate-500'
+}
+
+export const SUPPLIER_INVOICE_STATUT_LABELS: Record<SupplierInvoiceStatut, string> = {
+  a_payer: 'À payer',
+  payee: 'Payée'
+}
+
+export const SUPPLIER_INVOICE_STATUT_STYLES: Record<SupplierInvoiceStatut, string> = {
+  a_payer: 'bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300',
+  payee: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300'
 }
 
 export function formatMontant(value: number): string {

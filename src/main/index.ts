@@ -6,6 +6,7 @@ import { registerProjectsIpc } from './ipc/projects'
 import { registerEventsIpc } from './ipc/events'
 import { registerBillingProfilesIpc } from './ipc/billingProfiles'
 import { registerDocumentsIpc } from './ipc/documents'
+import { registerSupplierInvoicesIpc } from './ipc/supplierInvoices'
 import { registerPaymentsIpc } from './ipc/payments'
 import { registerPreferencesIpc } from './ipc/preferences'
 import { registerPdfIpc } from './ipc/pdf'
@@ -50,6 +51,7 @@ app.whenReady().then(() => {
   registerEventsIpc()
   registerBillingProfilesIpc()
   registerDocumentsIpc()
+  registerSupplierInvoicesIpc()
   registerPaymentsIpc()
   registerPreferencesIpc()
   registerPdfIpc()

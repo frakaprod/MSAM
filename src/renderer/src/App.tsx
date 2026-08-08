@@ -15,6 +15,8 @@ import DocumentFormPage from './pages/Facturation/DocumentFormPage'
 import DocumentDetailPage from './pages/Facturation/DocumentDetailPage'
 import ProfilesListPage from './pages/Facturation/ProfilesListPage'
 import ProfileFormPage from './pages/Facturation/ProfileFormPage'
+import SupplierInvoicesListPage from './pages/Facturation/SupplierInvoicesListPage'
+import SupplierInvoiceFormPage from './pages/Facturation/SupplierInvoiceFormPage'
 import PaymentsListPage from './pages/Paiements/PaymentsListPage'
 import PreferencesPage from './pages/Preferences/PreferencesPage'
 
@@ -55,8 +57,17 @@ export default function App(): React.JSX.Element {
             <Route index element={<Navigate to="/facturation/factures" replace />} />
             <Route path="factures" element={<DocumentsListPage type="facture" />} />
             <Route path="devis" element={<DocumentsListPage type="devis" />} />
+            <Route path="fournisseurs" element={<SupplierInvoicesListPage />} />
             <Route path="profils" element={<ProfilesListPage />} />
           </Route>
+          <Route
+            path="/facturation/fournisseurs/nouveau"
+            element={<SupplierInvoiceFormPage />}
+          />
+          <Route
+            path="/facturation/fournisseurs/:id/modifier"
+            element={<SupplierInvoiceFormPage />}
+          />
           <Route path="/facturation/factures/nouveau" element={<DocumentFormPage type="facture" />} />
           <Route path="/facturation/factures/:id" element={<DocumentDetailPage type="facture" />} />
           <Route

@@ -17,7 +17,10 @@ import type {
   PreferencesUpdateInput,
   Project,
   ProjectFilters,
-  ProjectInput
+  ProjectInput,
+  SupplierInvoice,
+  SupplierInvoiceFilters,
+  SupplierInvoiceInput
 } from '../shared/types'
 
 const api = {
@@ -83,6 +86,18 @@ const api = {
       ipcRenderer.invoke('documents:delete', id),
     convertToFacture: (devisId: string): Promise<InvoiceDocument | null> =>
       ipcRenderer.invoke('documents:convertToFacture', devisId)
+  },
+  supplierInvoices: {
+    list: (filters?: SupplierInvoiceFilters): Promise<SupplierInvoice[]> =>
+      ipcRenderer.invoke('supplierInvoices:list', filters ?? {}),
+    get: (id: string): Promise<SupplierInvoice | null> =>
+      ipcRenderer.invoke('supplierInvoices:get', id),
+    create: (input: SupplierInvoiceInput): Promise<SupplierInvoice> =>
+      ipcRenderer.invoke('supplierInvoices:create', input),
+    update: (id: string, input: SupplierInvoiceInput): Promise<SupplierInvoice | null> =>
+      ipcRenderer.invoke('supplierInvoices:update', id, input),
+    delete: (id: string): Promise<boolean> =>
+      ipcRenderer.invoke('supplierInvoices:delete', id)
   },
   payments: {
     list: (): Promise<Payment[]> => ipcRenderer.invoke('payments:list'),

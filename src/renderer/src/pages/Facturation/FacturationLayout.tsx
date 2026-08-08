@@ -1,8 +1,9 @@
 import { NavLink, Outlet } from 'react-router-dom'
 
 const tabs = [
-  { to: '/facturation/factures', label: 'Factures' },
+  { to: '/facturation/factures', label: 'Factures émises' },
   { to: '/facturation/devis', label: 'Devis' },
+  { to: '/facturation/fournisseurs', label: 'Factures fournisseurs' },
   { to: '/facturation/profils', label: 'Profils de facturation' }
 ]
 

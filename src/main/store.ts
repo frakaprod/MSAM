@@ -19,7 +19,8 @@ import type {
   InvoiceDocument,
   Payment,
   Preferences,
-  Project
+  Project,
+  SupplierInvoice
 } from '../shared/types'
 
 export interface AppData {
@@ -29,6 +30,7 @@ export interface AppData {
   events: Event[]
   billingProfiles: BillingProfile[]
   documents: InvoiceDocument[]
+  supplierInvoices: SupplierInvoice[]
   payments: Payment[]
   preferences: Preferences
 }
@@ -46,6 +48,7 @@ const DEFAULT_DATA: AppData = {
   events: [],
   billingProfiles: [],
   documents: [],
+  supplierInvoices: [],
   payments: [],
   preferences: { ...DEFAULT_PREFERENCES }
 }
@@ -80,6 +83,7 @@ export function loadData(): AppData {
       events: parsed.events ?? [],
       billingProfiles: parsed.billingProfiles ?? [],
       documents: parsed.documents ?? [],
+      supplierInvoices: parsed.supplierInvoices ?? [],
       payments: parsed.payments ?? [],
       preferences: { ...DEFAULT_PREFERENCES, ...(parsed.preferences ?? {}) }
     }

@@ -212,6 +212,44 @@ export interface DocumentTotals {
   parTauxTva: { taux: number; baseHT: number; montantTva: number }[]
 }
 
+// --- Factures fournisseurs ---
+// Contrairement aux devis/factures ci-dessus (qu'on émet), ce sont des
+// factures reçues de fournisseurs : simple enregistrement d'infos + pièce
+// jointe (scan/PDF), pas de numérotation ni de calcul de lignes.
+
+export type SupplierInvoiceStatut = 'a_payer' | 'payee'
+
+export const SUPPLIER_INVOICE_STATUTS: SupplierInvoiceStatut[] = ['a_payer', 'payee']
+
+export interface SupplierInvoiceAttachment {
+  nom: string
+  dataUrl: string
+}
+
+export interface SupplierInvoice {
+  id: string
+  fournisseur: string
+  numero: string | null // numéro de facture donné par le fournisseur, texte libre
+  dateFacture: string // YYYY-MM-DD
+  montantHT: number | null
+  montantTVA: number | null
+  montantTTC: number
+  categorie: string | null
+  statut: SupplierInvoiceStatut
+  datePaiement: string | null
+  notes: string | null
+  fichier: SupplierInvoiceAttachment | null
+  createdAt: string
+  updatedAt: string
+}
+
+export type SupplierInvoiceInput = Omit<SupplierInvoice, 'id' | 'createdAt' | 'updatedAt'>
+
+export interface SupplierInvoiceFilters {
+  search?: string
+  statut?: SupplierInvoiceStatut | 'tous'
+}
+
 // --- Paiements ---
 // Un paiement est créé automatiquement quand une facture passe au statut
 // "payée" (et supprimé si elle en ressort), plutôt que saisi à la main :
