@@ -4,13 +4,23 @@ MSAM — Ma Secrétaire à Moi
 INSTALLATION (une seule fois) :
 1. Si ce n'est pas déjà fait, installe Node.js : https://nodejs.org (bouton "LTS")
    - Installateur classique, "suivant, suivant, terminer".
-2. Double-clique sur "Lancer MSAM.bat"
+2. Installe aussi Git (nécessaire pour les mises à jour automatiques) :
+   https://git-scm.com/download/win — installateur classique aussi.
+3. Double-clique sur "Lancer MSAM.bat"
    - La première fois, ça va télécharger et préparer l'application (quelques minutes, une fenêtre noire va défiler du texte, c'est normal).
    - Une fenêtre MSAM va s'ouvrir automatiquement à la fin.
 
+DÉJÀ INSTALLÉ AVANT LE SYSTÈME DE MISE À JOUR AUTOMATIQUE ?
+- Lance une seule fois "Basculer MSAM sur Git.bat" (livré à côté de ce fichier).
+  Il relie ton installation à GitHub pour les mises à jour automatiques, sans
+  toucher à tes données. L'ancien dossier est gardé en sauvegarde à côté.
+
 UTILISATION AU QUOTIDIEN :
 - Double-clique sur "Lancer MSAM.bat" à chaque fois que tu veux ouvrir MSAM.
-- Les fois suivantes, ça s'ouvre en quelques secondes (pas besoin de retélécharger).
+- Les fois suivantes, ça s'ouvre en quelques secondes.
+- À chaque lancement, MSAM vérifie automatiquement s'il y a une nouvelle
+  version et te propose de l'installer (un clic, l'appli redémarre toute
+  seule une fois à jour).
 
 TES DONNÉES :
 - Tout est stocké en local sur ton PC, dans :
@@ -18,11 +28,14 @@ TES DONNÉES :
 - Rien n'est envoyé sur internet. Pense à sauvegarder ce fichier de temps en temps
   (copier-coller dans un dossier de sauvegarde) si tu veux être tranquille.
 
-CE QUI EST DISPONIBLE AUJOURD'HUI :
-- Base clients (créer / rechercher / filtrer / modifier / supprimer des fiches clients)
+TES DOCUMENTS GÉNÉRÉS (factures, devis, relevés) :
+- Enregistrés automatiquement dans le dossier "MSAM" de tes Documents Windows
+  (modifiable dans Préférences), avec un sous-dossier par type de document.
 
-À VENIR :
-- Agenda & Planning projets
-- Facturation (avec gestion de plusieurs profils/statuts de facturation)
+CE QUI EST DISPONIBLE AUJOURD'HUI :
+- Base clients, Agenda, Projets
+- Facturation : devis, factures émises, factures fournisseurs, profils de facturation
+- Fiscalité : suivi des paiements reçus, relevés PDF mensuels
+- Préférences : thème clair/sombre, logo, dossier des documents, mises à jour automatiques
 
 Un souci, une idée, un bug ? Dis-le à Claude dans la conversation.

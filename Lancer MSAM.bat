@@ -13,6 +13,15 @@ if errorlevel 1 (
   exit /b 1
 )
 
+where git >nul 2>nul
+if errorlevel 1 (
+  echo.
+  echo [Info] Git n'est pas installe : les mises a jour automatiques sont
+  echo desactivees. Pour les activer, installe Git depuis https://git-scm.com/download/win
+  echo puis relance ce fichier.
+  echo.
+)
+
 if not exist node_modules (
   echo.
   echo Premiere installation de MSAM, ca peut prendre quelques minutes...
