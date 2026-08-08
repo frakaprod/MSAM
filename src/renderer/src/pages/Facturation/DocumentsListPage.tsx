@@ -11,7 +11,6 @@ import { formatMonthLabel } from '../../lib/dateUtils'
 import DeleteButton from '../../components/DeleteButton'
 import EditButton from '../../components/EditButton'
 import PrintButton from '../../components/PrintButton'
-import PdfButton from '../../components/PdfButton'
 
 export default function DocumentsListPage({ type }: { type: DocumentType }): React.JSX.Element {
   const [documents, setDocuments] = useState<InvoiceDocument[]>([])
@@ -105,10 +104,6 @@ export default function DocumentsListPage({ type }: { type: DocumentType }): Rea
               to={`/facturation/${basePath}/${doc.id}?action=imprimer`}
               title={`Imprimer ce ${label}`}
             />
-            <PdfButton
-              to={`/facturation/${basePath}/${doc.id}?action=pdf`}
-              title={`Enregistrer ce ${label} en PDF`}
-            />
             <EditButton to={`/facturation/${basePath}/${doc.id}/modifier`} title={`Modifier ce ${label}`} />
             <DeleteButton
               title={`Supprimer ce ${label}`}
@@ -132,7 +127,7 @@ export default function DocumentsListPage({ type }: { type: DocumentType }): Rea
           <th className="px-4 py-3 font-medium">Date</th>
           <th className="px-4 py-3 font-medium text-right">Total TTC</th>
           <th className="px-4 py-3 font-medium">Statut</th>
-          <th className="w-28" />
+          <th className="w-20" />
         </tr>
       </thead>
     )
