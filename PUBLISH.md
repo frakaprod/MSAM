@@ -9,7 +9,7 @@ Le système utilise le provider "generic" d'electron-updater, qui lit un
 fichier `latest.yml` + l'installeur sur une simple URL HTTP — pas besoin de
 l'API GitHub (Releases), qui n'est pas accessible depuis certains
 environnements. On sert ces fichiers via **GitHub Pages**
-(`https://frakaprod.github.io/msam/updates/`), activé une fois pour toutes
+(`https://frakaprod.github.io/MSAM/updates/`), activé une fois pour toutes
 sur la branche `releases` (Settings > Pages > Source = branche "releases").
 GitHub Pages supporte les requêtes HTTP Range (vérifié) — contrairement à
 `raw.githubusercontent.com`, qui les ignore — ce qui permet à
@@ -65,7 +65,7 @@ publication).
 4. Committer et pousser le code source correspondant sur `main` comme
    d'habitude (`git push origin main`).
 5. Lien de téléchargement direct pour une installation manuelle :
-   `https://frakaprod.github.io/msam/updates/MSAM%20Setup%20<version>.exe`
+   `https://frakaprod.github.io/MSAM/updates/MSAM%20Setup%20<version>.exe`
    (peut prendre 1-2 min après le push pour se mettre à jour, le temps que
    GitHub Pages rebuild).
 

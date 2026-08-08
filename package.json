@@ -50,7 +50,7 @@
     ],
     "publish": {
       "provider": "generic",
-      "url": "https://frakaprod.github.io/msam/updates",
+      "url": "https://frakaprod.github.io/MSAM/updates",
       "channel": "latest",
       "useMultipleRangeRequest": true
     },
