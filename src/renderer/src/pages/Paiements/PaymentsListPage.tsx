@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import type { BillingProfile, Client, InvoiceDocument, Payment } from '../../../../shared/types'
+import { EXPORT_SUBFOLDERS } from '../../../../shared/exportFolders'
 import { formatMonthLabel } from '../../lib/dateUtils'
 import { formatMontant } from '../../lib/meta'
 
@@ -103,7 +104,7 @@ export default function PaymentsListPage(): React.JSX.Element {
       setSavingReleve(true)
       try {
         const { path } = await window.api.pdf.save({
-          subfolder: 'Relevés',
+          subfolder: EXPORT_SUBFOLDERS.relevesPaiements,
           filename: `Releve ${releveMonth}`
         })
         setSavedRelevePath(path)

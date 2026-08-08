@@ -222,7 +222,8 @@ export default function PreferencesPage(): React.JSX.Element {
           Dossier des documents générés
         </h3>
         <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-          Où le bouton "Enregistrer en PDF" (factures, devis, relevés) place ses fichiers.
+          Factures émises, factures fournisseurs, devis et relevés de paiements y sont enregistrés
+          automatiquement (à leur création, et à chaque modification), chacun dans son sous-dossier.
         </p>
 
         <p className="mt-3 text-sm text-slate-700 dark:text-slate-300 font-mono break-all rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 px-3 py-2">
@@ -245,6 +246,12 @@ export default function PreferencesPage(): React.JSX.Element {
             Ouvrir le dossier
           </button>
         </div>
+
+        <p className="mt-3 text-xs text-slate-400 dark:text-slate-500">
+          Le dossier choisi contiendra un sous-dossier "MSAM" dédié (pour ne rien mélanger avec
+          d'éventuels autres fichiers déjà présents dedans), lui-même divisé en 4 sous-dossiers :
+          Factures émises, Factures fournisseurs, Devis, Relevés paiements.
+        </p>
       </section>
 
       <p className="mt-4 text-xs text-slate-400 dark:text-slate-500">

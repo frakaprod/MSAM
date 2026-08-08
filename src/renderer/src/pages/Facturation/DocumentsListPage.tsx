@@ -53,11 +53,9 @@ export default function DocumentsListPage({ type }: { type: DocumentType }): Rea
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [type, search, statutFilter])
 
-  // Les factures émises sont regroupées par mois (comme le module Fiscalité)
-  // pour s'y retrouver plus facilement au fil de l'année ; les devis restent
-  // dans une liste plate, l'idée de "mois" étant moins pertinente pour eux.
+  // Factures et devis sont regroupés par mois d'émission (comme le module
+  // Fiscalité), pour s'y retrouver plus facilement au fil de l'année.
   const groups = useMemo(() => {
-    if (type !== 'facture') return null
     const map = new Map<string, InvoiceDocument[]>()
     for (const doc of documents) {
       const key = doc.dateEmission.slice(0, 7)
@@ -65,7 +63,7 @@ export default function DocumentsListPage({ type }: { type: DocumentType }): Rea
       map.get(key)!.push(doc)
     }
     return Array.from(map.entries())
-  }, [documents, type])
+  }, [documents])
 
   function monthLabel(key: string): string {
     const [year, month] = key.split('-').map(Number)
@@ -185,7 +183,7 @@ export default function DocumentsListPage({ type }: { type: DocumentType }): Rea
         <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-8 text-center text-sm text-slate-400 dark:text-slate-500">
           Aucun{type === 'devis' ? '' : 'e'} {label} pour le moment.
         </div>
-      ) : groups ? (
+      ) : (
         <div className="space-y-6">
           {groups.map(([monthKey, monthDocs]) => {
             const monthTotal = monthDocs.reduce(
@@ -227,17 +225,6 @@ export default function DocumentsListPage({ type }: { type: DocumentType }): Rea
               </div>
             )
           })}
-        </div>
-      ) : (
-        <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden">
-          <table className="w-full text-sm">
-            <TableHead />
-            <tbody>
-              {documents.map((doc) => (
-                <DocumentRow key={doc.id} doc={doc} />
-              ))}
-            </tbody>
-          </table>
         </div>
       )}
     </div>

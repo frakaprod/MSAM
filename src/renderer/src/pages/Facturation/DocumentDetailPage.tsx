@@ -11,6 +11,7 @@ import type {
 } from '../../../../shared/types'
 import { REGIME_TVA_LABELS } from '../../../../shared/types'
 import { computeDocumentTotals } from '../../../../shared/invoiceCalc'
+import { EXPORT_SUBFOLDERS } from '../../../../shared/exportFolders'
 import { DOCUMENT_STATUT_LABELS, DOCUMENT_STATUT_STYLES, formatMontant } from '../../lib/meta'
 
 export default function DocumentDetailPage({ type }: { type: DocumentType }): React.JSX.Element {
@@ -70,6 +71,11 @@ export default function DocumentDetailPage({ type }: { type: DocumentType }): Re
     }
     const updated = await window.api.documents.update(id, payload)
     setDoc(updated)
+    // Le document physique doit refléter toute modification, y compris un
+    // simple changement de statut via ces actions rapides (cf. demande :
+    // "les modifications devront être enregistrées dans le document
+    // physique et pas juste dans le logiciel").
+    if (updated) await savePdfFor(updated)
   }
 
   async function handleDelete(): Promise<void> {
@@ -95,20 +101,24 @@ export default function DocumentDetailPage({ type }: { type: DocumentType }): Re
     window.print()
   }
 
-  async function handleSavePdf(): Promise<void> {
-    if (!doc) return
+  async function savePdfFor(document: InvoiceDocument): Promise<void> {
     setSavingPdf(true)
     setPdfError(null)
     setSavedPdfPath(null)
     try {
-      const subfolder = type === 'devis' ? 'Devis' : 'Factures'
-      const { path } = await window.api.pdf.save({ subfolder, filename: doc.numero })
+      const subfolder = type === 'devis' ? EXPORT_SUBFOLDERS.devis : EXPORT_SUBFOLDERS.facturesEmises
+      const { path } = await window.api.pdf.save({ subfolder, filename: document.numero })
       setSavedPdfPath(path)
     } catch {
       setPdfError("Impossible d'enregistrer le PDF. Vérifie le dossier choisi dans Préférences.")
     } finally {
       setSavingPdf(false)
     }
+  }
+
+  async function handleSavePdf(): Promise<void> {
+    if (!doc) return
+    await savePdfFor(doc)
   }
 
   // Icônes "Imprimer" / "Enregistrer en PDF" dans la liste : elles amènent ici

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import type { SupplierInvoiceInput, SupplierInvoiceStatut } from '../../../../shared/types'
+import { EXPORT_SUBFOLDERS } from '../../../../shared/exportFolders'
 import { todayISO } from '../../lib/dateUtils'
 import { fileToDataUrl } from '../../lib/file'
 
@@ -121,11 +122,32 @@ export default function SupplierInvoiceFormPage(): React.JSX.Element {
     }
 
     try {
-      if (isEdit && id) {
-        await window.api.supplierInvoices.update(id, payload)
-      } else {
-        await window.api.supplierInvoices.create(payload)
+      const saved =
+        isEdit && id
+          ? await window.api.supplierInvoices.update(id, payload)
+          : await window.api.supplierInvoices.create(payload)
+
+      // La pièce jointe (scan/PDF importé) est aussi enregistrée physiquement
+      // dans le dossier "Factures fournisseurs" des documents générés, en
+      // plus d'être gardée dans l'appli pour consultation rapide. Non
+      // bloquant : si l'écriture disque échoue, la pièce jointe reste quand
+      // même consultable/téléchargeable depuis la fiche.
+      if (saved?.fichier) {
+        const ext = saved.fichier.nom.includes('.')
+          ? saved.fichier.nom.slice(saved.fichier.nom.lastIndexOf('.'))
+          : ''
+        const filename = `${saved.fournisseur} - ${saved.numero || saved.dateFacture}${ext}`
+        try {
+          await window.api.attachments.save({
+            subfolder: EXPORT_SUBFOLDERS.facturesFournisseurs,
+            filename,
+            dataUrl: saved.fichier.dataUrl
+          })
+        } catch {
+          // silencieux : cf. commentaire ci-dessus
+        }
       }
+
       navigate('/facturation/fournisseurs')
     } finally {
       setSaving(false)

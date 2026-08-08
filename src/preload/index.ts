@@ -120,6 +120,10 @@ const api = {
       ipcRenderer.invoke('pdf:save', input),
     revealFile: (filePath: string): Promise<boolean> =>
       ipcRenderer.invoke('pdf:revealFile', filePath)
+  },
+  attachments: {
+    save: (input: { subfolder: string; filename: string; dataUrl: string }): Promise<{ path: string }> =>
+      ipcRenderer.invoke('attachments:save', input)
   }
 }
 

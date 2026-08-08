@@ -9,8 +9,11 @@ import { getPreferences } from './preferencesRepository'
  * propre mise en page imprimable via les classes Tailwind `print:*`, comme
  * pour l'impression classique) et l'enregistre directement dans le dossier
  * configuré dans Préférences, sans passer par la boîte de dialogue
- * d'impression. Le nom de fichier est dédupliqué si besoin (jamais d'écrasement
- * silencieux d'un document existant).
+ * d'impression. Le fichier est nommé d'après le document (son numéro, ou le
+ * mois pour un relevé) : ré-enregistrer le même document écrase le fichier
+ * existant, pour que le document physique reste toujours synchronisé avec la
+ * dernière version enregistrée dans l'appli (cf. DocumentDetailPage.tsx qui
+ * ré-enregistre automatiquement à chaque création/modification).
  */
 export async function generateAndSavePdf(
   event: IpcMainInvokeEvent,
@@ -34,13 +37,7 @@ export async function generateAndSavePdf(
 
   const safeName = filename.replace(/[\\/:*?"<>|]/g, '-')
   const base = safeName.replace(/\.pdf$/i, '')
-
-  let target = join(dir, `${base}.pdf`)
-  let counter = 1
-  while (existsSync(target)) {
-    target = join(dir, `${base} (${counter}).pdf`)
-    counter += 1
-  }
+  const target = join(dir, `${base}.pdf`)
 
   writeFileSync(target, buffer)
   return target

@@ -146,12 +146,15 @@ export default function DocumentFormPage({ type }: { type: DocumentType }): Reac
     }
 
     try {
+      // ?action=pdf déclenche l'enregistrement automatique en PDF dès
+      // l'arrivée sur la fiche (cf. DocumentDetailPage.tsx) : le document
+      // physique doit toujours refléter la dernière version créée/modifiée.
       if (isEdit && id) {
         await window.api.documents.update(id, payload)
-        navigate(`/facturation/${basePath}/${id}`)
+        navigate(`/facturation/${basePath}/${id}?action=pdf`)
       } else {
         const created = await window.api.documents.create(payload)
-        navigate(`/facturation/${basePath}/${created.id}`)
+        navigate(`/facturation/${basePath}/${created.id}?action=pdf`)
       }
     } finally {
       setSaving(false)

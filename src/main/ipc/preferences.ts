@@ -1,6 +1,7 @@
 import { BrowserWindow, dialog, ipcMain, shell } from 'electron'
 import type { OpenDialogOptions } from 'electron'
 import { existsSync, mkdirSync } from 'fs'
+import { join } from 'path'
 import { getPreferences, updatePreferences } from '../preferencesRepository'
 import type { PreferencesUpdateInput } from '../../shared/types'
 
@@ -25,7 +26,12 @@ export function registerPreferencesIpc(): void {
     }
     const result = win ? await dialog.showOpenDialog(win, options) : await dialog.showOpenDialog(options)
     if (result.canceled || result.filePaths.length === 0) return null
-    return updatePreferences({ dossierExports: result.filePaths[0] })
+    // Le dossier choisi devient le parent : MSAM range toujours ses
+    // documents dans un sous-dossier "MSAM" dédié à l'intérieur, pour ne
+    // jamais mélanger avec d'autres fichiers déjà présents dans le dossier
+    // sélectionné par l'utilisateur.
+    const dossierExports = join(result.filePaths[0], 'MSAM')
+    return updatePreferences({ dossierExports })
   })
 
   ipcMain.handle('preferences:openExportsFolder', () => {
