@@ -3,6 +3,7 @@ import type { OpenDialogOptions } from 'electron'
 import { existsSync, mkdirSync } from 'fs'
 import { basename, join } from 'path'
 import { ensureExportFoldersOrError, getPreferences, updatePreferences } from '../preferencesRepository'
+import { migrateExportFolders } from '../exportMigration'
 import type { PreferencesUpdateInput } from '../../shared/types'
 
 export function registerPreferencesIpc(): void {
@@ -21,10 +22,10 @@ export function registerPreferencesIpc(): void {
   // promesse rejetée en silence côté renderer.
   ipcMain.handle('preferences:chooseExportsFolder', async (event) => {
     const win = BrowserWindow.fromWebContents(event.sender)
-    const current = getPreferences().dossierExports
+    const previous = getPreferences().dossierExports
     const options: OpenDialogOptions = {
       title: 'Choisir le dossier des documents générés',
-      defaultPath: current ?? undefined,
+      defaultPath: previous ?? undefined,
       // 'createDirectory' (création de dossier depuis la boîte de dialogue)
       // n'existe que sur macOS ; son équivalent Windows/Linux est
       // 'promptToCreate'. On met les deux pour couvrir toutes les plateformes.
@@ -41,7 +42,16 @@ export function registerPreferencesIpc(): void {
 
     const preferences = updatePreferences({ dossierExports })
     const error = ensureExportFoldersOrError(dossierExports)
-    return { preferences, error }
+
+    // Si l'utilisateur avait déjà des documents enregistrés dans l'ancien
+    // dossier, on les transfère automatiquement vers le nouveau : changer de
+    // dossier ne doit jamais "abandonner" des documents déjà générés.
+    let migration: { movedCount: number; errors: string[] } | null = null
+    if (!error && previous) {
+      migration = migrateExportFolders(previous, dossierExports)
+    }
+
+    return { preferences, error, migration }
   })
 
   ipcMain.handle('preferences:openExportsFolder', () => {

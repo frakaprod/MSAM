@@ -25,6 +25,8 @@ export default function PreferencesPage(): React.JSX.Element {
   const [saved, setSaved] = useState(false)
   const [logoError, setLogoError] = useState<string | null>(null)
   const [exportsError, setExportsError] = useState<string | null>(null)
+  const [migrationInfo, setMigrationInfo] = useState<string | null>(null)
+  const [migratingFolder, setMigratingFolder] = useState(false)
 
   useEffect(() => {
     window.api.preferences.get().then(setPreferences)
@@ -86,19 +88,44 @@ export default function PreferencesPage(): React.JSX.Element {
 
   async function handleChooseExportsFolder(): Promise<void> {
     setExportsError(null)
-    const result = await window.api.preferences.chooseExportsFolder()
-    if (!result) return
-    setPreferences(result.preferences)
-    if (result.error) {
-      setExportsError(
-        `Le dossier a été enregistré, mais MSAM n'a pas réussi à y créer les sous-dossiers : ${result.error}`
-      )
-      return
+    setMigrationInfo(null)
+    setMigratingFolder(true)
+    try {
+      const result = await window.api.preferences.chooseExportsFolder()
+      if (!result) return
+      setPreferences(result.preferences)
+      if (result.error) {
+        setExportsError(
+          `Le dossier a été enregistré, mais MSAM n'a pas réussi à y créer les sous-dossiers : ${result.error}`
+        )
+        return
+      }
+      flashSaved()
+
+      // Les documents déjà enregistrés dans l'ancien dossier sont transférés
+      // automatiquement vers le nouveau (cf. migrateExportFolders côté main) :
+      // changer de dossier ne doit jamais abandonner des documents existants.
+      if (result.migration) {
+        const { movedCount, errors } = result.migration
+        if (movedCount > 0 || errors.length > 0) {
+          const parts: string[] = []
+          if (movedCount > 0) {
+            parts.push(`${movedCount} document${movedCount > 1 ? 's' : ''} transféré${movedCount > 1 ? 's' : ''} depuis l'ancien dossier.`)
+          }
+          if (errors.length > 0) {
+            parts.push(`${errors.length} fichier${errors.length > 1 ? 's' : ''} n'ont pas pu être transféré${errors.length > 1 ? 's' : ''} (${errors[0]}).`)
+          }
+          setMigrationInfo(parts.join(' '))
+        }
+      }
+
+      // Ouvre tout de suite le dossier dans l'Explorateur, pour vérifier
+      // immédiatement que "MSAM", ses 4 sous-dossiers et les documents
+      // transférés sont bien là.
+      window.api.preferences.openExportsFolder()
+    } finally {
+      setMigratingFolder(false)
     }
-    flashSaved()
-    // Ouvre tout de suite le dossier dans l'Explorateur, pour vérifier
-    // immédiatement que "MSAM" et ses 4 sous-dossiers ont bien été créés.
-    window.api.preferences.openExportsFolder()
   }
 
   if (!preferences) {
@@ -234,6 +261,8 @@ export default function PreferencesPage(): React.JSX.Element {
         <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
           Factures émises, factures fournisseurs, devis et relevés de paiements y sont enregistrés
           automatiquement (à leur création, et à chaque modification), chacun dans son sous-dossier.
+          Si tu changes ce dossier, les documents déjà enregistrés dans l'ancien y sont transférés
+          automatiquement.
         </p>
 
         <p className="mt-3 text-sm text-slate-700 dark:text-slate-300 font-mono break-all rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 px-3 py-2">
@@ -244,9 +273,10 @@ export default function PreferencesPage(): React.JSX.Element {
           <button
             type="button"
             onClick={handleChooseExportsFolder}
-            className="rounded-lg border border-slate-300 dark:border-slate-600 px-3 py-1.5 text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700"
+            disabled={migratingFolder}
+            className="rounded-lg border border-slate-300 dark:border-slate-600 px-3 py-1.5 text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 disabled:opacity-60"
           >
-            Choisir un dossier...
+            {migratingFolder ? 'Transfert des documents...' : 'Choisir un dossier...'}
           </button>
           <button
             type="button"
@@ -263,6 +293,12 @@ export default function PreferencesPage(): React.JSX.Element {
           Factures émises, Factures fournisseurs, Devis, Relevés paiements. Il s'ouvre automatiquement
           dans l'Explorateur juste après le choix, pour vérifier que tout est bien créé.
         </p>
+
+        {migrationInfo && (
+          <div className="mt-3 rounded-lg bg-brand-50 dark:bg-brand-900/30 text-brand-700 dark:text-brand-300 text-xs px-3 py-2">
+            {migrationInfo}
+          </div>
+        )}
 
         {exportsError && (
           <div className="mt-3 rounded-lg bg-red-50 dark:bg-red-950/40 text-red-700 text-xs px-3 py-2">
